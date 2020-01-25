@@ -24,5 +24,4 @@ void ROSUnit_UGVMoveBase::receive_msg_data(DataMessage* t_msg)
 
         _pub_pose.publish(t_PoseStamped);
     }
-
 }

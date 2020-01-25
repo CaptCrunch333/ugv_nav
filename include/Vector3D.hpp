@@ -69,9 +69,5 @@ class Vector3D
 
                         return tmp;
                 }
-                double operator ^ (Vector3D<T> tmp)
-                {
-                        return x*tmp.x + y*tmp.y + z*tmp.z;
-                }
 
 };
