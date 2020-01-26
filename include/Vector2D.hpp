@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <math.h>
 #include <initializer_list>
-template <class T>  
+template <class T>
 class Vector2D
 {
         public:
