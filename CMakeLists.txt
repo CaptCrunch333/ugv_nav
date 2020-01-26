@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   geometry_msgs
+  common_srv
 )
 
 ## Generate added messages and services with any dependencies listed here
@@ -25,6 +26,7 @@ catkin_package(
     geometry_msgs
     roscpp
     std_msgs
+    common_srv
   DEPENDS
     system_lib
 )
@@ -39,4 +41,5 @@ FILE(GLOB SOURCE_FILES *.hpp *.cpp
         )
 
 add_executable(${PROJECT_NAME}_node ${SOURCE_FILES})
+add_dependencies(${PROJECT_NAME}_node ${catkin_EXPORTED_TARGETS})
 target_link_libraries(${PROJECT_NAME}_node ${catkin_LIBRARIES})

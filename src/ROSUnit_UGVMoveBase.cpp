@@ -21,7 +21,7 @@ void ROSUnit_UGVMoveBase::receive_msg_data(DataMessage* t_msg)
         t_PoseStamped.pose.position.x = t_positionmsg.x;
         t_PoseStamped.pose.position.y = t_positionmsg.y;
         t_PoseStamped.pose.position.z = t_positionmsg.z;
-
+        t_PoseStamped.pose.orientation.w = 1;
         _pub_pose.publish(t_PoseStamped);
     }
 }
