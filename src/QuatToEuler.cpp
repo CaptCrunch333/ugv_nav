@@ -1,4 +1,4 @@
-#include "Quat_to_Euler.hpp"
+#include "QuatToEuler.hpp"
 
 void QuatToEuler::receive_msg_data(DataMessage* t_msg)
 {
@@ -8,7 +8,6 @@ void QuatToEuler::receive_msg_data(DataMessage* t_msg)
         Vector3D<float> _euler;
 
         HeadingMsg t_headingmsg;
-
 
         // roll (x-axis rotation)
         double sinr_cosp = +2.0 * (q.getData().w * q.getData().x + q.getData().y * q.getData().z);
@@ -29,7 +28,6 @@ void QuatToEuler::receive_msg_data(DataMessage* t_msg)
         
         t_headingmsg.yaw = _euler.z;
 
-        emit_message((DataMessage*) & t_headingmsg);
+        emit_message((DataMessage*) &t_headingmsg);
     }
-
 } 

@@ -11,17 +11,23 @@ ROSUnit_UGVMoveBase::~ROSUnit_UGVMoveBase()
 
 void ROSUnit_UGVMoveBase::receive_msg_data(DataMessage* t_msg)
 {
-    if(t_msg->getType() == msg_type::POSITION)
+    if(t_msg->getType() == msg_type::VECTOR2D)
     {
-        PositionMsg t_positionmsg = *((PositionMsg*) t_msg);
-        geometry_msgs::PoseStamped t_PoseStamped;
+        Vector2DMsg* t_positionmsg = ((Vector2DMsg*) t_msg);
 
-        t_PoseStamped.header.frame_id = "map";
+        m_PoseStamped.header.frame_id = "map";
         
-        t_PoseStamped.pose.position.x = t_positionmsg.x;
-        t_PoseStamped.pose.position.y = t_positionmsg.y;
-        t_PoseStamped.pose.position.z = t_positionmsg.z;
-        t_PoseStamped.pose.orientation.w = 1;
-        _pub_pose.publish(t_PoseStamped);
+        m_PoseStamped.pose.position.x = t_positionmsg->data.x;
+        m_PoseStamped.pose.position.y = t_positionmsg->data.y;
+        m_PoseStamped.pose.position.z = 0;
+    }
+    else if(t_msg->getType() == msg_type::QUATERNION)
+    {
+        QuaternionMessage* t_quat_msg = (QuaternionMessage*) t_msg;
+        m_PoseStamped.pose.orientation.w = t_quat_msg->getData().w;
+        m_PoseStamped.pose.orientation.x = t_quat_msg->getData().x;
+        m_PoseStamped.pose.orientation.y = t_quat_msg->getData().y;
+        m_PoseStamped.pose.orientation.z = t_quat_msg->getData().z;
+        _pub_pose.publish(m_PoseStamped);
     }
 }
