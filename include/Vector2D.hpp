@@ -67,8 +67,8 @@ class Vector2D
                 }
                 bool operator == (Vector2D<T> tmp)
                 {
-                        if(this->x == tmp.x && this->y == tmp.y) {return true}
-                        else {return false}
+                        if(this->x == tmp.x && this->y == tmp.y) {return true;}
+                        else {return false;}
                 }
                 template <typename M>
                 operator Vector2D<M>()

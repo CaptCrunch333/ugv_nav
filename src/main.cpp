@@ -21,8 +21,7 @@ int main(int argc, char **argv){
     // *********************************** FIRE MAP ***********************************
     //TODO: add function to take map vertices as a txt
     UGV_FireMap* m_map = new UGV_FireMap;
-    Vector2D<double> mapOrigin;
-    mapOrigin = {0,0};
+    Vector2D<double> mapOrigin({0,0});
     m_map->MoveMap(mapOrigin);
     // ********************************************************************************
     // ********************************** ROS UNITS  **********************************
@@ -41,8 +40,12 @@ int main(int argc, char **argv){
     // ********************************************************************************
     // ******************************** UGV NAVIGATOR *********************************
     UGVNavigator* mainUGVNavigator = new UGVNavigator;
-    mainUGVNavigator->setEntranceLocation({6,7});
-    mainUGVNavigator->setHomeBaseLocation({0,0});
+    Vector2D<double> HomeBaseLodaction({0,0});
+    float HomeBaseHeading = 0;
+    mainUGVNavigator->setHomeBaseLocation(HomeBaseLodaction, HomeBaseHeading);
+    Vector2D<double> EntraceLocation({6,7}); 
+    float EntranceHeading = 0;
+    mainUGVNavigator->setEntranceLocation(EntraceLocation, EntranceHeading);
     // ********************************************************************************
     // ***************************** ROS PACKAGES BRIDGE ******************************
     QuatToEuler* QTE = new QuatToEuler();
@@ -55,18 +58,18 @@ int main(int argc, char **argv){
     ROS_AMCLPose->add_callback_msg_receiver((msg_receiver*) mainUGVNavigator);
     QTE->add_callback_msg_receiver((msg_receiver*) mainUGVNavigator);
 
-    FireDirectionUpdaterSrv((msg_receiver*) mainUGVNavigator);
-    FireDirectionUpdaterSrv->setEmittingChannel(CHANNELS::DIRECTION_UPDATER);
+    FireDirectionUpdaterSrv->add_callback_msg_receiver((msg_receiver*) mainUGVNavigator);
+    FireDirectionUpdaterSrv->setEmittingChannel((int)CHANNELS::DIRECTION_UPDATER);
 
-    FirePositionUpdaterSrv((msg_receiver*) mainUGVNavigator);
-    FirePositionUpdaterSrv->setEmittingChannel(CHANNELS::POSITION_UPDATER);
+    FirePositionUpdaterSrv->add_callback_msg_receiver((msg_receiver*) mainUGVNavigator);
+    FirePositionUpdaterSrv->setEmittingChannel((int)CHANNELS::POSITION_UPDATER);
 
     InternalStateUpdaterSrv->add_callback_msg_receiver((msg_receiver*) mainUGVNavigator);
-    InternalStateUpdaterSrv->setEmittingChannel(CHANNELS::INTERNAL_STATE_UPDATER);
+    InternalStateUpdaterSrv->setEmittingChannel((int)CHANNELS::INTERNAL_STATE_UPDATER);
 
     mainUGVNavigator->add_callback_msg_receiver((msg_receiver*) DistanceToFirePub);
     mainUGVNavigator->add_callback_msg_receiver((msg_receiver*) StateChangerUpdaterClnt);
-    mainUGVNavigator->add_callback_msg_receiver((msg_receiver*) );
+    mainUGVNavigator->add_callback_msg_receiver((msg_receiver*) BaseCommandsClnt);
     // ********************************************************************************
     while (ros::ok()){
     

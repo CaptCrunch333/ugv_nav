@@ -1,5 +1,5 @@
 #pragma once 
-template  <class L> class Vector3D;
+template  <class L> class Vector2D;
 #include <cstdint>
 #include <initializer_list>
 #include "Vector2D.hpp"
@@ -13,7 +13,7 @@ class Vector3D
                 T y = 0;
                 T z = 0;
                 Vector3D<T>(){};
-                Vector3D<T>(std::initializer_list<T> tmp){this->x = *tmp.begin(); this->y = *(tmp.begin()+1,); this->z = *(tmp.begin()+2)};
+                Vector3D<T>(std::initializer_list<T> tmp){this->x = *tmp.begin(); this->y = *(tmp.begin()+1); this->z = *(tmp.begin()+2);};
 
                 Vector3D<T> operator + (Vector3D<T> obj)
                 {
