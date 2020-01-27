@@ -1,22 +1,18 @@
 #pragma once
 #include "Rectangle.hpp"
-#include "MsgEmitter.hpp"
-#include "MsgReceiver.hpp"
+#include "logger.hpp"
 
-class UGV_FireMap : public msg_emitter, public msg_receiver 
-{
+class Map2D {
     public:
-        UGV_FireMap();
-        ~UGV_FireMap();
-
-        void receive_msg_data(DataMessage*);
+        Map2D();
+        ~Map2D();
         void MoveMap(Vector2D<double>);
-        void setFireLocation(Vector2D<double>);
-        Vector3D<double> getNormalToFire();
+        void setObjectLocation(Vector2D<double>);
+        Vector3D<double> getNormalToObject();
 
     private:
-        Vector2D<double> m_FireLocation;
-        Rectangle* m_FireRectangle;
+        Vector2D<double> m_ObjectLocation;
+        Rectangle* m_ObjectRectangle;
         Vector2D<double> r1l1p1;
         Vector2D<double> r1l1p2;
         Vector2D<double> r1l2p1;

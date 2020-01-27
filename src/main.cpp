@@ -3,7 +3,6 @@
 #include "ROSUnit_AMCLPose.hpp"
 #include "QuatToEuler.hpp"
 #include "EulerToQuat.hpp"
-#include "UGV_FireMap.hpp"
 #include "std_logger.hpp"
 #include "UGVNavigator.hpp"
 #include <vector>
@@ -20,32 +19,41 @@ int main(int argc, char **argv){
     // ********************************************************************************
     // *********************************** FIRE MAP ***********************************
     //TODO: add function to take map vertices as a txt
-    UGV_FireMap* m_map = new UGV_FireMap;
+    Map2D* mainMap = new Map2D;
     Vector2D<double> mapOrigin({0,0});
-    m_map->MoveMap(mapOrigin);
-    // ********************************************************************************
-    // ********************************** ROS UNITS  **********************************
-    //ROSFactory Units
-    ROSUnit_Factory* mainROSFactory = new ROSUnit_Factory(nh);
-    ROSUnit* FireDirectionUpdaterSrv = mainROSFactory->CreateROSUnit(ROSUnit_tx_rx_type::Server, ROSUnit_Vector, "/ugv_nav/set_fire_direction");
-    ROSUnit* FirePositionUpdaterSrv = mainROSFactory->CreateROSUnit(ROSUnit_tx_rx_type::Server, ROSUnit_Point, "/ugv_nav/set_fire_location");
-    ROSUnit* InternalStateUpdaterSrv = mainROSFactory->CreateROSUnit(ROSUnit_tx_rx_type::Server, ROSUnit_Int, "/ugv_nav/set_mission_state");
-    ROSUnit* IntertialPositionPub = mainROSFactory->CreateROSUnit(ROSUnit_tx_rx_type::Publisher, ROSUnit_Point2D, "/ugv_nav/inertial_position");
-    ROSUnit* IntertialHeadingPub = mainROSFactory->CreateROSUnit(ROSUnit_tx_rx_type::Publisher, ROSUnit_Float, "/ugv_nav/inertial_heading");
-    ROSUnit* DistanceToFirePub = mainROSFactory->CreateROSUnit(ROSUnit_tx_rx_type::Publisher, ROSUnit_Float, "/ugv_nav/distance_to_fire");
-    ROSUnit* StateChangerUpdaterClnt = mainROSFactory->CreateROSUnit(ROSUnit_tx_rx_type::Client, ROSUnit_Int, "/gf_indoor_fire_mm/update_water_ext_state");
-    // Package Specific Units
-    ROSUnit_AMCLPose* ROS_AMCLPose = new ROSUnit_AMCLPose(nh);
-    ROSUnit_UGVMoveBase* BaseCommandsClnt = new ROSUnit_UGVMoveBase(nh);
+    mainMap->MoveMap(mapOrigin);
     // ********************************************************************************
     // ******************************** UGV NAVIGATOR *********************************
-    UGVNavigator* mainUGVNavigator = new UGVNavigator;
+    WheeledRobot* mainUGV = new WheeledRobot;
+    mainUGV->setTolerance(0.1, 0.175);
+    UGVNavigator* mainUGVNavigator = new UGVNavigator(mainUGV);
     Vector2D<double> HomeBaseLodaction({0,0});
     float HomeBaseHeading = 0;
     mainUGVNavigator->setHomeBaseLocation(HomeBaseLodaction, HomeBaseHeading);
     Vector2D<double> EntraceLocation({6,7}); 
     float EntranceHeading = 0;
     mainUGVNavigator->setEntranceLocation(EntraceLocation, EntranceHeading);
+    mainUGVNavigator->setMap(mainMap);
+    std::vector<Vector2D<float>> mainScanPath;
+    mainScanPath.push_back(Vector2D<float>({6, 7}));
+    mainScanPath.push_back(Vector2D<float>({9, 11}));
+    mainScanPath.push_back(Vector2D<float>({11, 6}));
+    mainScanPath.push_back(Vector2D<float>({10, 4}));
+    mainUGVNavigator->setScanningPath(mainScanPath);
+    // ********************************************************************************
+    // ********************************** ROS UNITS  **********************************
+    //ROSFactory Units
+    ROSUnit_Factory* mainROSFactory = new ROSUnit_Factory(nh);
+    ROSUnit* FireDirectionUpdaterSrv = mainROSFactory->CreateROSUnit(ROSUnit_tx_rx_type::Server, ROSUnit_Vector, "ugv_nav/set_fire_direction");
+    ROSUnit* FirePositionUpdaterSrv = mainROSFactory->CreateROSUnit(ROSUnit_tx_rx_type::Server, ROSUnit_Point, "ugv_nav/set_fire_location");
+    ROSUnit* InternalStateUpdaterSrv = mainROSFactory->CreateROSUnit(ROSUnit_tx_rx_type::Server, ROSUnit_Int, "ugv_nav/set_mission_state");
+    ROSUnit* IntertialPositionPub = mainROSFactory->CreateROSUnit(ROSUnit_tx_rx_type::Publisher, ROSUnit_Point2D, "ugv_nav/inertial_position");
+    ROSUnit* IntertialHeadingPub = mainROSFactory->CreateROSUnit(ROSUnit_tx_rx_type::Publisher, ROSUnit_Float, "ugv_nav/inertial_heading");
+    ROSUnit* DistanceToFirePub = mainROSFactory->CreateROSUnit(ROSUnit_tx_rx_type::Publisher, ROSUnit_Float, "ugv_nav/distance_to_fire");
+    ROSUnit* StateChangerUpdaterClnt = mainROSFactory->CreateROSUnit(ROSUnit_tx_rx_type::Client, ROSUnit_Int, "gf_indoor_fire_mm/update_water_ext_state");
+    // Package Specific Units
+    ROSUnit_AMCLPose* ROS_AMCLPose = new ROSUnit_AMCLPose(nh);
+    ROSUnit_UGVMoveBase* BaseCommandsClnt = new ROSUnit_UGVMoveBase(nh);
     // ********************************************************************************
     // ***************************** ROS PACKAGES BRIDGE ******************************
     QuatToEuler* QTE = new QuatToEuler();
@@ -59,10 +67,10 @@ int main(int argc, char **argv){
     QTE->add_callback_msg_receiver((msg_receiver*) mainUGVNavigator);
 
     FireDirectionUpdaterSrv->add_callback_msg_receiver((msg_receiver*) mainUGVNavigator);
-    FireDirectionUpdaterSrv->setEmittingChannel((int)CHANNELS::DIRECTION_UPDATER);
+    FireDirectionUpdaterSrv->setEmittingChannel((int)CHANNELS::FIRE_DIRECTION_UPDATER);
 
     FirePositionUpdaterSrv->add_callback_msg_receiver((msg_receiver*) mainUGVNavigator);
-    FirePositionUpdaterSrv->setEmittingChannel((int)CHANNELS::POSITION_UPDATER);
+    FirePositionUpdaterSrv->setEmittingChannel((int)CHANNELS::FIRE_POSITION_UPDATER);
 
     InternalStateUpdaterSrv->add_callback_msg_receiver((msg_receiver*) mainUGVNavigator);
     InternalStateUpdaterSrv->setEmittingChannel((int)CHANNELS::INTERNAL_STATE_UPDATER);
@@ -76,6 +84,5 @@ int main(int argc, char **argv){
         ros::spinOnce();
         //loop_rate.sleep();
     }
-
     return 0;
 }

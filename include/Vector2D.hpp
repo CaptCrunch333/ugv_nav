@@ -1,16 +1,14 @@
 // Version: 3.0
 // Author: Mohamad Chehadeh
 // Last Modification By: Mohamad Wahbah
-// Date: 30 Dec 2019
-//Revision Note: Overloaded assignment operator to accept initializer list
+// Date: 27 Jan 2020
+//Revision Note: Added assignment operator and constructor with init_lists, added  the "==" and "!=" logic operators
 #pragma once 
-
 template  <class L> class Vector3D;
-
 #include <cstdint>
-#include <math.h>
-#include "Vector3D.hpp"
 #include <initializer_list>
+#include "Vector3D.hpp"
+#include <math.h>
 template <class T>
 class Vector2D
 {
@@ -68,6 +66,11 @@ class Vector2D
                 bool operator == (Vector2D<T> tmp)
                 {
                         if(this->x == tmp.x && this->y == tmp.y) {return true;}
+                        else {return false;}
+                }
+                bool operator != (Vector2D<T> tmp)
+                {
+                        if(this->x != tmp.x || this->y != tmp.y) {return true;}
                         else {return false;}
                 }
                 template <typename M>

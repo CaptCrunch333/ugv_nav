@@ -5,18 +5,18 @@
 #include "UGVNavMissionStateManager.hpp"
 #include "PathGenerator2D.hpp"
 #include "MsgEmitter.hpp"
+#include "Map2D.hpp"
 #include "logger.hpp"
 #include "FloatMsg.hpp"
 #include "Vector2DMsg.hpp"
 #include "PointsMsg.hpp"
 #include "Line2D.hpp"
 #include "Vector3DMessage.hpp"
+#include "WheeledRobot.hpp"
 
-enum class CHANNELS {DIRECTION_UPDATER = 1, POSITION_UPDATER = 2, INTERNAL_STATE_UPDATER = 3};
-
-class UGVNavigator : public msg_emitter, public msg_receiver
-{
+class UGVNavigator : public msg_emitter, public msg_receiver {
     public:
+        UGVNavigator(WheeledRobot*);
         void setHomeBaseLocation(Vector2D<double>, float);
         void setEntranceLocation(Vector2D<double>, float);
         //SetScanPath takes the scan path under the following conditions:
@@ -24,15 +24,15 @@ class UGVNavigator : public msg_emitter, public msg_receiver
         //The following points should be the scan path in order
         //The Final Point Should have a path to the initial Point
         void setScanningPath(std::vector<Vector2D<float>>);
+        void setMap(Map2D*);
         void receive_msg_data(DataMessage*);
         void receive_msg_data(DataMessage* ,int);
 
     private:
+        WheeledRobot* m_robot;
+        Map2D* m_Map;
         PathGenerator2D m_PathGenerator;
-        std::vector<Vector2D<float>> m_scanning_pos;
         Line2D m_FireDirection;
-        Vector2D<double> m_HomePosition, m_EntrancePosition, m_current_pos, m_FireLocation;
-        bool m_FireDirectionFound = false, m_FireLocationFound = false;
-        float m_current_heading, m_HomeHeading, m_EntranceHeading;
-        Vector3DMessage m_msg;
+        Vector2D<double> m_HomePosition, m_EntrancePosition, m_FireLocation;
+        float m_HomeHeading, m_EntranceHeading, m_FireHeading;
 };

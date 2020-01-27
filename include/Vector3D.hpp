@@ -1,3 +1,8 @@
+// Version: 3.0
+// Author: Mohamad Chehadeh
+// Last Modification By: Mohamad Wahbah
+// Date: 27 Jan 2020
+//Revision Note: Added assignment operator and constructor with init_lists, added  the "==" and "!=" logic operators
 #pragma once 
 template  <class L> class Vector2D;
 #include <cstdint>
@@ -67,6 +72,17 @@ class Vector3D
                         this->x = *tmp.begin();
                         this->y = *(tmp.begin()+1);
                         this->z = *(tmp.begin()+2);
+                }
+
+                bool operator == (Vector3D<T> tmp)
+                {
+                        if(this->x == tmp.x && this->y == tmp.y && this->z == tmp.z) {return true;}
+                        else {return false;}
+                }
+
+                bool operator != (Vector3D<T> tmp){
+                        if(this->x != tmp.x || this->y != tmp.y || this->z != tmp.z) {return true;}
+                        else {return false;}
                 }
 
                 template <typename M>

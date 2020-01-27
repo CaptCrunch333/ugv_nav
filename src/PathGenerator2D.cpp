@@ -6,7 +6,7 @@ void PathGenerator2D::setTrack(std::vector<Vector2D<float>> t_track)
     m_current_vertex = m_track.begin();
 }
 
-Vector3D<float> PathGenerator2D::getNextPose(Vector3D<float> t_curr_pose)
+Vector3D<float> PathGenerator2D::getNextPose(Line2D t_fire_dir)
 {  
     if(m_current_vertex == m_track.begin())
     {
@@ -15,7 +15,7 @@ Vector3D<float> PathGenerator2D::getNextPose(Vector3D<float> t_curr_pose)
         line2.setPoint1(*m_current_vertex);
         line1.setPoint2(m_track.at(1));
         line2.setPoint2(*m_track.end());
-        if(line1.getAngle() <= line2.getAngle())
+        if((line1.getAngle() - t_fire_dir.getAngle()) <= (line2.getAngle() - t_fire_dir.getAngle()))
         {
             m_current_vertex = m_track.begin()+1;
             direction = 1;
