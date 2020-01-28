@@ -68,6 +68,7 @@ ROSUnit* ROSUnit_Factory::CreateROSUnit(ROSUnit_tx_rx_type t_ros_msg_type_rx_tx,
                 new_ros_unit_ptr=new ROSUnit_Point2DPub(ROS_path,nh);
             }
         }
+        break;
         case ROSUnit_msg_type::ROSUnit_Point:
         {
             if (t_ros_msg_type_rx_tx==ROSUnit_tx_rx_type::Client){

@@ -13,7 +13,7 @@ ROSUnit_Point2DPub::~ROSUnit_Point2DPub()
 void ROSUnit_Point2DPub::receive_msg_data(DataMessage* t_msg)
 {
     //Change the below code to match your received msg
-    if(t_msg->getType() == msg_type::VECTOR3D)
+    if(t_msg->getType() == msg_type::VECTOR2D)
     {
         Vector2DMsg* t_vec = (Vector2DMsg*) t_msg;
         common_srv::Point2D t_point;
