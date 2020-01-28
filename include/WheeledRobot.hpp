@@ -6,6 +6,7 @@
 #include "Vector3DMessage.hpp"
 #include "FloatMsg.hpp"
 #include "Line2D.hpp"
+#include "QuaternionMessage.hpp"
 
 class WheeledRobot : public msg_receiver, public msg_emitter
 {
@@ -18,6 +19,7 @@ class WheeledRobot : public msg_receiver, public msg_emitter
         Vector2D<float> getCurrentPosition();
         float getCurrentHeading();
         void move();
+        void stop();
         bool reachedPosition();
         void receive_msg_data(DataMessage*);
         void receive_msg_data(DataMessage*, int);

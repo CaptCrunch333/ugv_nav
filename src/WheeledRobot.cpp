@@ -38,6 +38,20 @@ void WheeledRobot::move() {
     this->emit_message((DataMessage*) &t_GoalHeadingMsg);
 }
 
+void WheeledRobot::stop() {
+    Vector2DMsg t_GoalPosMsg;
+    t_GoalPosMsg.data = m_CurrentPosition;
+    QuaternionMessage t_GoalHeadingMsg;
+    Quaternion t_GoalHeading;
+    t_GoalHeading.x = 0;
+    t_GoalHeading.y = 0;
+    t_GoalHeading.z = 0;
+    t_GoalHeading.w = 0;
+    t_GoalHeadingMsg.setQuaternionMessage(t_GoalHeading);
+    this->emit_message((DataMessage*) &t_GoalPosMsg);
+    this->emit_message((DataMessage*) &t_GoalHeadingMsg);
+}
+
 bool WheeledRobot::reachedPosition() {
     Line2D line;
     line.setPoint1(m_CurrentPosition);

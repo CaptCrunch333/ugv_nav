@@ -4,7 +4,8 @@
             "name": "Linux",
             "includePath": [
                 "/opt/ros/kinetic/include/**",
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "/home/ffuav01/MBZIRC_ws/devel/include/common_srv/**"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

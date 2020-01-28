@@ -63,8 +63,8 @@ int main(int argc, char **argv){
     ROS_AMCLPose->add_callback_msg_receiver((msg_receiver*) QTE);
     ROS_AMCLPose->add_callback_msg_receiver((msg_receiver*) IntertialPositionPub);
     QTE->add_callback_msg_receiver((msg_receiver*) IntertialHeadingPub);
-    ROS_AMCLPose->add_callback_msg_receiver((msg_receiver*) mainUGVNavigator);
-    QTE->add_callback_msg_receiver((msg_receiver*) mainUGVNavigator);
+    ROS_AMCLPose->add_callback_msg_receiver((msg_receiver*) mainUGV);
+    QTE->add_callback_msg_receiver((msg_receiver*) mainUGV);
 
     FireDirectionUpdaterSrv->add_callback_msg_receiver((msg_receiver*) mainUGVNavigator);
     FireDirectionUpdaterSrv->setEmittingChannel((int)CHANNELS::FIRE_DIRECTION_UPDATER);
@@ -77,7 +77,10 @@ int main(int argc, char **argv){
 
     mainUGVNavigator->add_callback_msg_receiver((msg_receiver*) DistanceToFirePub);
     mainUGVNavigator->add_callback_msg_receiver((msg_receiver*) StateChangerUpdaterClnt);
-    mainUGVNavigator->add_callback_msg_receiver((msg_receiver*) BaseCommandsClnt);
+    
+    mainUGV->add_callback_msg_receiver((msg_receiver*) BaseCommandsClnt);
+    mainUGV->add_callback_msg_receiver((msg_receiver*) ETQ);
+    ETQ->add_callback_msg_receiver((msg_receiver*) BaseCommandsClnt);
     // ********************************************************************************
     while (ros::ok()){
     

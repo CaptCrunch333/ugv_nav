@@ -7,26 +7,27 @@ UGVNavigator::UGVNavigator(WheeledRobot* t_robot) {
 void UGVNavigator::receive_msg_data(DataMessage* t_msg) {
     switch (mainUGVNavMissionStateManager.getMissionState()) {
         case UGVNavState::HEADINGTOWARDSENTRANCE: {
-                if(m_robot->reachedPosition()) {
-                    //TODO: add a cancel robot command
-                    mainUGVNavMissionStateManager.updateMissionState(UGVNavState::SEARCHINGFORFIRE);
-                }
+            if(m_robot->reachedPosition()) {
+                m_robot->stop();
+                mainUGVNavMissionStateManager.updateMissionState(UGVNavState::SEARCHINGFORFIRE);
+                m_Timer.tick();
             }
+        }
             break;
         case UGVNavState::SEARCHINGFORFIRE: {
-                if(m_robot->reachedPosition()) {
-                    Vector3D<float> tmp = m_PathGenerator.getNextPose(m_FireDirection);
-                    m_robot->setGoalPosition(tmp.project_xy());
-                    m_robot->setGoalHeading(tmp.z);
-                    m_robot->move();
-                }
+            if(m_robot->reachedPosition() || (m_robot->getGoalPosition() == m_EntrancePosition && m_Timer.tockMilliSeconds() >= m_SerchTimeOut)){
+                Vector3D<float> tmp = m_PathGenerator.getNextPose(m_FireDirection);
+                m_robot->setGoalPosition(tmp.project_xy());
+                m_robot->setGoalHeading(tmp.z);
+                m_robot->move();
             }
+        }
             break;
         case UGVNavState::HEADINGTOWARDSFIRE: {
-                if(m_robot->reachedPosition()) {
-                    mainUGVNavMissionStateManager.updateMissionState(UGVNavState::EXTINGUISHINGFIRE);
-                }
+            if(m_robot->reachedPosition()) {
+                mainUGVNavMissionStateManager.updateMissionState(UGVNavState::EXTINGUISHINGFIRE);
             }
+        }
             break;
         default:
             break;
@@ -117,4 +118,8 @@ void UGVNavigator::setScanningPath(std::vector<Vector2D<float>> t_pos) {
 
 void UGVNavigator::setMap(Map2D* t_map) {
     m_Map = t_map;
+}
+
+void UGVNavigator::setSearchTimeOut(int t_time) {
+    m_SerchTimeOut = t_time;
 }
