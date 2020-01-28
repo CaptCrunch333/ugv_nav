@@ -15,7 +15,10 @@ void UGVNavigator::receive_msg_data(DataMessage* t_msg) {
         }
             break;
         case UGVNavState::SEARCHINGFORFIRE: {
-            if(m_robot->reachedPosition() || (m_robot->getGoalPosition() == m_EntrancePosition && m_Timer.tockMilliSeconds() >= m_SerchTimeOut)){
+            Logger::getAssignedLogger()->log("reached: %f", (float) m_robot->reachedPosition(), LoggerLevel::Info);
+            Logger::getAssignedLogger()->log("goal position = %f, %f", m_robot->getGoalPosition().x, m_robot->getGoalPosition().y, LoggerLevel::Info);
+            Logger::getAssignedLogger()->log("timer: %f", (float) m_Timer.tockMilliSeconds(), LoggerLevel::Info);
+            if((m_robot->reachedPosition() && m_robot->getGoalPosition() != m_EntrancePosition) || (m_robot->getGoalPosition() == m_EntrancePosition && m_Timer.tockMilliSeconds() >= m_SerchTimeOut)){
                 Vector3D<float> tmp = m_PathGenerator.getNextPose(m_FireDirection);
                 m_robot->setGoalPosition(tmp.project_xy());
                 m_robot->setGoalHeading(tmp.z);
@@ -77,8 +80,21 @@ void UGVNavigator::receive_msg_data(DataMessage* t_msg, int t_channel_id) {
             }
         }
     }
+    else if(t_channel_id ==  (int)CHANNELS::FIRE_DIRECTION_UPDATER) {
+        if(t_msg->getType() == msg_type::VECTOR) {
+            Logger::getAssignedLogger()->log("Fire Direction Received",LoggerLevel::Info);
+            VectorMsg* t_points_msg = (VectorMsg*)t_msg;
+            m_FireDirection.setPoint1(t_points_msg->p1.project_xy());
+            m_FireDirection.setPoint2(t_points_msg->p2.project_xy());
+            Vector3D<float> tmp = m_PathGenerator.getNextPose(m_FireDirection);
+            m_robot->setGoalPosition(tmp.project_xy());
+            m_robot->setGoalHeading(tmp.z);
+            m_robot->move();
+        }
+    }
     else if(t_channel_id == (int)CHANNELS::FIRE_POSITION_UPDATER) {
-        if(t_msg->getType() == msg_type::POINT) {
+        if(t_msg->getType() == msg_type::VECTOR3D) {
+            Logger::getAssignedLogger()->log("Fire Position Received",LoggerLevel::Info);
             Vector3DMessage* t_direction_msg = (Vector3DMessage*)t_msg;
             m_FireLocation = t_direction_msg->getData().project_xy();
             mainUGVNavMissionStateManager.updateMissionState(UGVNavState::HEADINGTOWARDSFIRE);
@@ -86,17 +102,6 @@ void UGVNavigator::receive_msg_data(DataMessage* t_msg, int t_channel_id) {
             Vector3D<float> t_vec = m_Map->getNormalToObject();
             m_robot->setGoalPosition(t_vec.project_xy());
             m_robot->setGoalHeading(t_vec.z);
-            m_robot->move();
-        }
-    }
-    else if(t_channel_id ==  (int)CHANNELS::FIRE_DIRECTION_UPDATER) {
-        if(t_msg->getType() == msg_type::POINTS) {
-            PointsMsg* t_points_msg = (PointsMsg*)t_msg;
-            m_FireDirection.setPoint1(t_points_msg->points.at(0).project_xy());
-            m_FireDirection.setPoint2(t_points_msg->points.at(1).project_xy());
-            Vector3D<float> tmp = m_PathGenerator.getNextPose(m_FireDirection);
-            m_robot->setGoalPosition(tmp.project_xy());
-            m_robot->setGoalHeading(tmp.z);
             m_robot->move();
         }
     }

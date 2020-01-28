@@ -36,6 +36,7 @@ void WheeledRobot::move() {
     t_GoalHeadingMsg.setVector3DMessage(Vector3D<float>({0,0, m_GoalHeading}));
     this->emit_message((DataMessage*) &t_GoalPosMsg);
     this->emit_message((DataMessage*) &t_GoalHeadingMsg);
+    Logger::getAssignedLogger()->log("UGV Moving to: %f, %f, with orientation: %f", m_GoalPosition.x, m_GoalPosition.y, m_GoalHeading, LoggerLevel::Info);
 }
 
 void WheeledRobot::stop() {

@@ -19,13 +19,14 @@ int main(int argc, char **argv){
     // ********************************************************************************
     // *********************************** FIRE MAP ***********************************
     //TODO: add function to take map vertices as a txt
-    Map2D* mainMap = new Map2D;
-    Vector2D<double> mapOrigin({0,0});
-    mainMap->MoveMap(mapOrigin);
+    Map2D* mainMap = new Map2D();
+    //Vector2D<double> mapOrigin({0,0});
+    //mainMap->MoveMap(mapOrigin);
     // ********************************************************************************
     // ******************************** UGV NAVIGATOR *********************************
     WheeledRobot* mainUGV = new WheeledRobot;
-    mainUGV->setTolerance(0.1, 0.175);
+    //mainUGV->setTolerance(0.1, 0.175);
+    mainUGV->setTolerance(0.1, 175);
     UGVNavigator* mainUGVNavigator = new UGVNavigator(mainUGV);
     Vector2D<double> HomeBaseLodaction({0,0});
     float HomeBaseHeading = 0;
@@ -65,6 +66,7 @@ int main(int argc, char **argv){
     QTE->add_callback_msg_receiver((msg_receiver*) IntertialHeadingPub);
     ROS_AMCLPose->add_callback_msg_receiver((msg_receiver*) mainUGV);
     QTE->add_callback_msg_receiver((msg_receiver*) mainUGV);
+    QTE->add_callback_msg_receiver((msg_receiver*) mainUGVNavigator);
 
     FireDirectionUpdaterSrv->add_callback_msg_receiver((msg_receiver*) mainUGVNavigator);
     FireDirectionUpdaterSrv->setEmittingChannel((int)CHANNELS::FIRE_DIRECTION_UPDATER);

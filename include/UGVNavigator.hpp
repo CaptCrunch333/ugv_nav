@@ -9,7 +9,7 @@
 #include "logger.hpp"
 #include "FloatMsg.hpp"
 #include "Vector2DMsg.hpp"
-#include "PointsMsg.hpp"
+#include "VectorMsg.hpp"
 #include "Line2D.hpp"
 #include "Vector3DMessage.hpp"
 #include "WheeledRobot.hpp"

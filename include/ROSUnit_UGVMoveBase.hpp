@@ -4,6 +4,7 @@
 #include "Vector2DMsg.hpp"
 #include "QuaternionMessage.hpp"
 #include <geometry_msgs/PoseStamped.h>
+#include "logger.hpp"
 
 class ROSUnit_UGVMoveBase : public ROSUnit {
 

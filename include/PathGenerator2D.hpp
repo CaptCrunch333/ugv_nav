@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Line2D.hpp"
+#include "logger.hpp"
 
 class PathGenerator2D
 {
@@ -11,7 +12,6 @@ class PathGenerator2D
     private:
         std::vector<Vector2D<float>>::iterator m_current_vertex;
         int direction = 0;
-        float tolerance = 0.05;
         std::vector<Vector2D<float>> m_track;
         std::vector<Vector2D<float>>::iterator getNextVertex();
 };

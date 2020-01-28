@@ -6,6 +6,7 @@
 #include "Vector3DMessage.hpp"
 #include "FloatMsg.hpp"
 #include "Line2D.hpp"
+#include "logger.hpp"
 #include "QuaternionMessage.hpp"
 
 class WheeledRobot : public msg_receiver, public msg_emitter

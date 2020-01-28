@@ -35,7 +35,7 @@ void Map2D::setObjectLocation(Vector2D<double> t_point) {
         m_ObjectLocation = loc2;
         m_ObjectRectangle = &r2;
     }
-    Logger::getAssignedLogger()->log("Fire location is: %f and %f", dist1,  dist2, LoggerLevel::Info);
+    Logger::getAssignedLogger()->log("Fire location is: %f and %f", m_ObjectLocation.x,  m_ObjectLocation.y, LoggerLevel::Info);
 }
 
 Vector3D<double> Map2D::getNormalToObject() {
