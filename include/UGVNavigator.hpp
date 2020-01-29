@@ -14,10 +14,11 @@
 #include "Vector3DMessage.hpp"
 #include "WheeledRobot.hpp"
 #include "Timer.hpp"
+#include "TimedBlock.hpp"
 
-class UGVNavigator : public msg_emitter, public msg_receiver {
+class UGVNavigator : public msg_emitter, public msg_receiver, public TimedBlock  {
     public:
-        UGVNavigator(WheeledRobot*);
+        UGVNavigator(WheeledRobot*, block_frequency);
         void setHomeBaseLocation(Vector2D<double>, float);
         void setEntranceLocation(Vector2D<double>, float);
         //SetScanPath takes the scan path under the following conditions:
@@ -27,8 +28,10 @@ class UGVNavigator : public msg_emitter, public msg_receiver {
         void setScanningPath(std::vector<Vector2D<float>>);
         void setMap(Map2D*);
         void setSearchTimeOut(int);
+        void setReachingGoalPositionTimeOut(int);
         void receive_msg_data(DataMessage*);
         void receive_msg_data(DataMessage* ,int);
+        void loopInternal();
 
     private:
         WheeledRobot* m_robot;
@@ -37,6 +40,6 @@ class UGVNavigator : public msg_emitter, public msg_receiver {
         Timer m_Timer;
         Line2D m_FireDirection;
         Vector2D<double> m_HomePosition, m_EntrancePosition, m_FireLocation;
-        int m_SerchTimeOut = 5000;
+        int m_SearchTimeOut = 5000, m_ReachingGoalPositionTimeOut = 40000;
         float m_HomeHeading, m_EntranceHeading, m_FireHeading;
 };

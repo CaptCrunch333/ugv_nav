@@ -5,6 +5,7 @@
 #include "EulerToQuat.hpp"
 #include "std_logger.hpp"
 #include "UGVNavigator.hpp"
+#include "looper.hpp"
 #include <vector>
 
 int main(int argc, char **argv){
@@ -26,7 +27,7 @@ int main(int argc, char **argv){
     WheeledRobot* mainUGV = new WheeledRobot;
     //mainUGV->setTolerance(0.1, 0.175);
     mainUGV->setTolerance(0.1, 175);
-    UGVNavigator* mainUGVNavigator = new UGVNavigator(mainUGV);
+    UGVNavigator* mainUGVNavigator = new UGVNavigator(mainUGV, block_frequency::hz10);
     Vector2D<double> HomeBaseLodaction({0,0});
     float HomeBaseHeading = 0;
     mainUGVNavigator->setHomeBaseLocation(HomeBaseLodaction, HomeBaseHeading);
@@ -83,10 +84,17 @@ int main(int argc, char **argv){
     mainUGV->add_callback_msg_receiver((msg_receiver*) ETQ);
     ETQ->add_callback_msg_receiver((msg_receiver*) BaseCommandsClnt);
     // ********************************************************************************
-    while (ros::ok()){
-    
+    // ****************************** SYSTEM CONNECTIONS ******************************
+    pthread_t loop10hz_func_id;
+    Looper* main_looper = new Looper();
+    main_looper->addTimedBlock((TimedBlock*) mainUGVNavigator);
+    pthread_create(&loop10hz_func_id, NULL, &Looper::Loop10Hz, NULL);
+    // ********************************************************************************
+    while (ros::ok()) {
         ros::spinOnce();
         //loop_rate.sleep();
     }
     return 0;
 }
+
+//TODO: add time out functionallity

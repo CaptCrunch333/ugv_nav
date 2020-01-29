@@ -1,10 +1,10 @@
 #include "UGVNavigator.hpp"
 
-UGVNavigator::UGVNavigator(WheeledRobot* t_robot) {
+UGVNavigator::UGVNavigator(WheeledRobot* t_robot, block_frequency t_bf) : TimedBlock(t_bf) {
     m_robot = t_robot;
 }
 
-void UGVNavigator::receive_msg_data(DataMessage* t_msg) {
+void UGVNavigator::loopInternal() {
     switch (mainUGVNavMissionStateManager.getMissionState()) {
         case UGVNavState::WARMINGUP: {
             mainUGVNavMissionStateManager.updateMissionState(UGVNavState::IDLE);
@@ -19,14 +19,21 @@ void UGVNavigator::receive_msg_data(DataMessage* t_msg) {
         }
             break;
         case UGVNavState::SEARCHINGFORFIRE: {
-            Logger::getAssignedLogger()->log("reached: %f", (float) m_robot->reachedPosition(), LoggerLevel::Info);
-            Logger::getAssignedLogger()->log("goal position = %f, %f", m_robot->getGoalPosition().x, m_robot->getGoalPosition().y, LoggerLevel::Info);
-            Logger::getAssignedLogger()->log("timer: %f", (float) m_Timer.tockMilliSeconds(), LoggerLevel::Info);
-            if((m_robot->reachedPosition() && m_robot->getGoalPosition() != m_EntrancePosition) || (m_robot->getGoalPosition() == m_EntrancePosition && m_Timer.tockMilliSeconds() >= m_SerchTimeOut)){
+            if((m_robot->reachedPosition() && m_robot->getGoalPosition() != m_EntrancePosition)
+                || (m_robot->getGoalPosition() == m_EntrancePosition && m_Timer.tockMilliSeconds() >= m_SearchTimeOut)){
                 Vector3D<float> tmp = m_PathGenerator.getNextPose(m_FireDirection);
                 m_robot->setGoalPosition(tmp.project_xy());
                 m_robot->setGoalHeading(tmp.z);
                 m_robot->move();
+                m_Timer.tick();
+            }
+            else if(m_Timer.tockMilliSeconds() > m_ReachingGoalPositionTimeOut) {
+                Logger::getAssignedLogger()->log("UGV Failed to Reach Search Goal Position, Moving To The Next Point", LoggerLevel::Warning);
+                Vector3D<float> tmp = m_PathGenerator.getNextPose(m_FireDirection);
+                m_robot->setGoalPosition(tmp.project_xy());
+                m_robot->setGoalHeading(tmp.z);
+                m_robot->move();
+                m_Timer.tick();
             }
         }
             break;
@@ -46,6 +53,8 @@ void UGVNavigator::receive_msg_data(DataMessage* t_msg) {
             break;
     }
 }
+
+void UGVNavigator::receive_msg_data(DataMessage* t_msg) {} // NOT IMPLEMENTED, LEGACY FUNCTION
 
 void UGVNavigator::receive_msg_data(DataMessage* t_msg, int t_channel_id) {
     if(t_channel_id == (int)CHANNELS::INTERNAL_STATE_UPDATER) {
@@ -88,7 +97,6 @@ void UGVNavigator::receive_msg_data(DataMessage* t_msg, int t_channel_id) {
                     Logger::getAssignedLogger()->log("MM Changed UGV Nav State To Returning To Base", LoggerLevel::Info);
                     break; 
                     }
-
                 default:
                     break;
                 }
@@ -140,6 +148,10 @@ void UGVNavigator::setMap(Map2D* t_map) {
     m_Map = t_map;
 }
 
-void UGVNavigator::setSearchTimeOut(int t_time) {
-    m_SerchTimeOut = t_time;
+void UGVNavigator::setSearchTimeOut(int t_val) {
+    m_SearchTimeOut = t_val;
+}
+
+void UGVNavigator::setReachingGoalPositionTimeOut(int t_val) {
+    m_ReachingGoalPositionTimeOut = t_val;
 }
