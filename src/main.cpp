@@ -8,7 +8,6 @@
 #include <vector>
 
 int main(int argc, char **argv){
-
     ros::init(argc, argv, "ugv_nav");
     ros::NodeHandle nh;
     //ros::Rate loop_rate(100);

@@ -6,6 +6,10 @@ UGVNavigator::UGVNavigator(WheeledRobot* t_robot) {
 
 void UGVNavigator::receive_msg_data(DataMessage* t_msg) {
     switch (mainUGVNavMissionStateManager.getMissionState()) {
+        case UGVNavState::WARMINGUP: {
+            mainUGVNavMissionStateManager.updateMissionState(UGVNavState::IDLE);
+        }
+            break;
         case UGVNavState::HEADINGTOWARDSENTRANCE: {
             if(m_robot->reachedPosition()) {
                 m_robot->stop();
@@ -28,7 +32,13 @@ void UGVNavigator::receive_msg_data(DataMessage* t_msg) {
             break;
         case UGVNavState::HEADINGTOWARDSFIRE: {
             if(m_robot->reachedPosition()) {
-                mainUGVNavMissionStateManager.updateMissionState(UGVNavState::EXTINGUISHINGFIRE);
+                mainUGVNavMissionStateManager.updateMissionState(UGVNavState::UGVALIGNEDWITHTARGET);
+            }
+        }
+            break;
+        case UGVNavState::RETURNINGTOBASE: {
+            if(m_robot->reachedPosition()) {
+                mainUGVNavMissionStateManager.updateMissionState(UGVNavState::REACHEDBASE);
             }
         }
             break;
@@ -48,7 +58,7 @@ void UGVNavigator::receive_msg_data(DataMessage* t_msg, int t_channel_id) {
                 case UGVNavState::IDLE: {
                     //TODO: add a function to kill the ugv movement and reset states
                     mainUGVNavMissionStateManager.updateMissionState(UGVNavState::IDLE);
-                    Logger::getAssignedLogger()->log("MM Changed UGV Nav State To IDLE", LoggerLevel::Warning);
+                    Logger::getAssignedLogger()->log("MM Changed UGV Nav State To IDLE", LoggerLevel::Info);
                     break; }
 
                 case UGVNavState::UTILITY: {
@@ -62,15 +72,20 @@ void UGVNavigator::receive_msg_data(DataMessage* t_msg, int t_channel_id) {
                     m_robot->setGoalHeading(m_EntranceHeading);
                     m_robot->move();
                     mainUGVNavMissionStateManager.updateMissionState(UGVNavState::HEADINGTOWARDSENTRANCE);
-                    Logger::getAssignedLogger()->log("MM Changed UGV Nav State To Heading Towards Entrance", LoggerLevel::Warning);
+                    Logger::getAssignedLogger()->log("MM Changed UGV Nav State To Heading Towards Entrance", LoggerLevel::Info);
                     break; }
+
+                case UGVNavState::EXTINGUISHINGFIRE: {
+                    mainUGVNavMissionStateManager.updateMissionState(UGVNavState::EXTINGUISHINGFIRE);
+                    Logger::getAssignedLogger()->log("MM Changed UGV Nav State To Extinguishing Fire", LoggerLevel::Info);
+                    break; }    
 
                 case UGVNavState::RETURNINGTOBASE: {
                     m_robot->setGoalPosition(m_HomePosition);
                     m_robot->setGoalHeading(m_HomeHeading);
                     m_robot->move();
                     mainUGVNavMissionStateManager.updateMissionState(UGVNavState::RETURNINGTOBASE);
-                    Logger::getAssignedLogger()->log("MM Changed UGV Nav State To Returning To Base", LoggerLevel::Warning);
+                    Logger::getAssignedLogger()->log("MM Changed UGV Nav State To Returning To Base", LoggerLevel::Info);
                     break; 
                     }
 

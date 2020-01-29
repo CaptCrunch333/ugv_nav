@@ -14,7 +14,7 @@ public:
     void receive_msg_data(DataMessage*);
 
 private:
-    UGVNavState m_current_state = UGVNavState::IDLE;
+    UGVNavState m_current_state = UGVNavState::WARMINGUP;
     void displayStateChange();
 };
 
