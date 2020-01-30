@@ -20,7 +20,6 @@ void ROSUnit_UGVMoveBase::receive_msg_data(DataMessage* t_msg)
         m_PoseStamped.pose.position.x = t_positionmsg->data.x;
         m_PoseStamped.pose.position.y = t_positionmsg->data.y;
         m_PoseStamped.pose.position.z = 0;
-        Logger::getAssignedLogger()->log("received pos", LoggerLevel::Info);
     }
     else if(t_msg->getType() == msg_type::QUATERNION)
     {
@@ -29,7 +28,6 @@ void ROSUnit_UGVMoveBase::receive_msg_data(DataMessage* t_msg)
         m_PoseStamped.pose.orientation.x = t_quat_msg->getData().x;
         m_PoseStamped.pose.orientation.y = t_quat_msg->getData().y;
         m_PoseStamped.pose.orientation.z = t_quat_msg->getData().z;
-        Logger::getAssignedLogger()->log("received quat", LoggerLevel::Info);
         _pub_pose.publish(m_PoseStamped);
     }
 }

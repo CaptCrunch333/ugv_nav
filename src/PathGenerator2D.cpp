@@ -15,9 +15,9 @@ Vector3D<float> PathGenerator2D::getNextPose(Line2D t_fire_dir)
         line2.setPoint1(*m_current_vertex);
         line1.setPoint2(m_track.at(1));
         line2.setPoint2(*(m_track.end()-1));
-        Logger::getAssignedLogger()->log("m_current_vertex: %f, %f", (*m_current_vertex).x, (*m_current_vertex).y, LoggerLevel::Info);
-        Logger::getAssignedLogger()->log("point 2 line 1: %f, %f", m_track.at(1).x, m_track.at(1).y, LoggerLevel::Info);
-        Logger::getAssignedLogger()->log("point 2 line 2: %f, %f", (*(m_track.end()-1)).x, (*(m_track.end()-1)).y, LoggerLevel::Info);
+        //log("m_current_vertex: %f, %f", (*m_current_vertex).x, (*m_current_vertex).y, LoggerLevel::Info);
+        //Logger::getAssignedLogger()->log("point 2 line 1: %f, %f", m_track.at(1).x, m_track.at(1).y, LoggerLevel::Info);
+        //Logger::getAssignedLogger()->log("point 2 line 2: %f, %f", (*(m_track.end()-1)).x, (*(m_track.end()-1)).y, LoggerLevel::Info);
         if((abs(line1.getAngle() - t_fire_dir.getAngle())) <= abs(line2.getAngle() - t_fire_dir.getAngle()))
         {
             m_current_vertex = m_track.begin()+1;

@@ -41,8 +41,8 @@ int main(int argc, char **argv){
     mainScanPath.push_back(Vector2D<float>({11, 6}));
     mainScanPath.push_back(Vector2D<float>({10, 4}));
     mainUGVNavigator->setScanningPath(mainScanPath);
-    mainUGVNavigator->setSearchTimeOut(100000000000);
-    mainUGVNavigator->setReachingGoalPositionTimeOut(100000000000);
+    mainUGVNavigator->setSearchTimeOut(1000000000);
+    mainUGVNavigator->setReachingGoalPositionTimeOut(1000000000);
     // ********************************************************************************
     // ********************************** ROS UNITS  **********************************
     //ROSFactory Units
@@ -80,12 +80,12 @@ int main(int argc, char **argv){
     InternalStateUpdaterSrv->setEmittingChannel((int)CHANNELS::INTERNAL_STATE_UPDATER);
 
     mainUGVNavigator->add_callback_msg_receiver((msg_receiver*) DistanceToFirePub);
-    
+
     mainUGV->add_callback_msg_receiver((msg_receiver*) BaseCommandsClnt);
     mainUGV->add_callback_msg_receiver((msg_receiver*) ETQ);
     ETQ->add_callback_msg_receiver((msg_receiver*) BaseCommandsClnt);
 
-    mainUGVNavMissionStateManager->add_callback_msg_receiver((msg_receiver*) StateUpdaterClnt);
+    (&mainUGVNavMissionStateManager)->add_callback_msg_receiver((msg_receiver*) StateUpdaterClnt);
     // ********************************************************************************
     // ****************************** SYSTEM CONNECTIONS ******************************
     pthread_t loop10hz_func_id;

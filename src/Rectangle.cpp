@@ -87,26 +87,21 @@ Vector3D<double> Rectangle::getNormalOfPoint(Vector2D<double> input_pt, bool dir
     Line2D side4=getSide4();
     if (side1.checkPointIntesection(input_pt)){ //TODO refactor
         found_line = side1;
-        std::cout << "found, side 1\n";
     }
     if (side2.checkPointIntesection(input_pt)){
         found_line = side2;
-        std::cout << "found, side 2\n";
     }
     if (side3.checkPointIntesection(input_pt)){
         found_line = side3;
-        std::cout << "found, side 3\n";
     }
     if (side4.checkPointIntesection(input_pt)){
         found_line = side4;
-        std::cout << "found, side 4\n";
     }
     found_line.scaleBy(0.5);
     found_line.translateBy(found_line.getPoint1() * -1 + input_pt);
     found_line = rotateVector(found_line, M_PI/2.0);
     if(checkPointEnclosure(found_line.getPoint2()))
     {
-        std::cout << "Enclosed\n ";
         if(direction)
         {
             found_line = rotateVector(found_line, M_PI);
@@ -116,7 +111,6 @@ Vector3D<double> Rectangle::getNormalOfPoint(Vector2D<double> input_pt, bool dir
     {
         if(!direction)
         {
-            std::cout << "Rotate\n ";
             found_line = rotateVector(found_line, M_PI);
         }
     }
