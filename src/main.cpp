@@ -31,7 +31,7 @@ int main(int argc, char **argv){
     Vector2D<double> HomeBaseLodaction({0,0});
     float HomeBaseHeading = 0;
     mainUGVNavigator->setHomeBaseLocation(HomeBaseLodaction, HomeBaseHeading);
-    Vector2D<double> EntraceLocation({6,7}); 
+    Vector2D<double> EntraceLocation({6,7});
     float EntranceHeading = 0;
     mainUGVNavigator->setEntranceLocation(EntraceLocation, EntranceHeading);
     mainUGVNavigator->setMap(mainMap);
@@ -41,6 +41,8 @@ int main(int argc, char **argv){
     mainScanPath.push_back(Vector2D<float>({11, 6}));
     mainScanPath.push_back(Vector2D<float>({10, 4}));
     mainUGVNavigator->setScanningPath(mainScanPath);
+    mainUGVNavigator->setSearchTimeOut(100000000000);
+    mainUGVNavigator->setReachingGoalPositionTimeOut(100000000000);
     // ********************************************************************************
     // ********************************** ROS UNITS  **********************************
     //ROSFactory Units
@@ -51,7 +53,7 @@ int main(int argc, char **argv){
     ROSUnit* IntertialPositionPub = mainROSFactory->CreateROSUnit(ROSUnit_tx_rx_type::Publisher, ROSUnit_Point2D, "ugv_nav/inertial_position");
     ROSUnit* IntertialHeadingPub = mainROSFactory->CreateROSUnit(ROSUnit_tx_rx_type::Publisher, ROSUnit_Float, "ugv_nav/inertial_heading");
     ROSUnit* DistanceToFirePub = mainROSFactory->CreateROSUnit(ROSUnit_tx_rx_type::Publisher, ROSUnit_Float, "ugv_nav/distance_to_fire");
-    ROSUnit* StateChangerUpdaterClnt = mainROSFactory->CreateROSUnit(ROSUnit_tx_rx_type::Client, ROSUnit_Int, "gf_indoor_fire_mm/update_water_ext_state");
+    ROSUnit* StateUpdaterClnt = mainROSFactory->CreateROSUnit(ROSUnit_tx_rx_type::Client, ROSUnit_Int, "gf_indoor_fire_mm/update_water_ext_state");
     // Package Specific Units
     ROSUnit_AMCLPose* ROS_AMCLPose = new ROSUnit_AMCLPose(nh);
     ROSUnit_UGVMoveBase* BaseCommandsClnt = new ROSUnit_UGVMoveBase(nh);
@@ -78,11 +80,12 @@ int main(int argc, char **argv){
     InternalStateUpdaterSrv->setEmittingChannel((int)CHANNELS::INTERNAL_STATE_UPDATER);
 
     mainUGVNavigator->add_callback_msg_receiver((msg_receiver*) DistanceToFirePub);
-    mainUGVNavigator->add_callback_msg_receiver((msg_receiver*) StateChangerUpdaterClnt);
     
     mainUGV->add_callback_msg_receiver((msg_receiver*) BaseCommandsClnt);
     mainUGV->add_callback_msg_receiver((msg_receiver*) ETQ);
     ETQ->add_callback_msg_receiver((msg_receiver*) BaseCommandsClnt);
+
+    mainUGVNavMissionStateManager->add_callback_msg_receiver((msg_receiver*) StateUpdaterClnt);
     // ********************************************************************************
     // ****************************** SYSTEM CONNECTIONS ******************************
     pthread_t loop10hz_func_id;
