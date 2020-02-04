@@ -4,7 +4,7 @@
 #include "logger.hpp"
 #include "UGVNavState.hpp"
 
-enum class CHANNELS {FIRE_DIRECTION_UPDATER = 1, FIRE_POSITION_UPDATER = 2, INTERNAL_STATE_UPDATER = 3};
+enum class CHANNELS {FIRE_DIRECTION_UPDATER = 1, FIRE_POSITION_UPDATER = 2, INTERNAL_STATE_UPDATER = 3, PATROL_UPDATER = 4};
 
 class UGVNavMissionStateManager : public msg_emitter, public msg_receiver
 {

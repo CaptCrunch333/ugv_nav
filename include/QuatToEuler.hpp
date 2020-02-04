@@ -2,6 +2,7 @@
 #include "MsgEmitter.hpp"
 #include "QuaternionMessage.hpp"
 #include "HeadingMsg.hpp"
+#include "FloatMsg.hpp"
 #include "Vector3D.hpp"
 #include <math.h>
 

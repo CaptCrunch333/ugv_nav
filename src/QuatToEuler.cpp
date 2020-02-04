@@ -7,7 +7,9 @@ void QuatToEuler::receive_msg_data(DataMessage* t_msg)
         QuaternionMessage q = *((QuaternionMessage*) t_msg);
         Vector3D<float> _euler;
 
+        //TODO: change the msg type to only floatmsg
         HeadingMsg t_headingmsg;
+        FloatMsg t_float_heading_msg;
 
         // roll (x-axis rotation)
         double sinr_cosp = +2.0 * (q.getData().w * q.getData().x + q.getData().y * q.getData().z);
@@ -27,7 +29,9 @@ void QuatToEuler::receive_msg_data(DataMessage* t_msg)
         _euler.z = atan2(siny_cosp, cosy_cosp);
         
         t_headingmsg.yaw = _euler.z;
+        t_float_heading_msg.data = _euler.z;
 
         emit_message((DataMessage*) &t_headingmsg);
+        emit_message((DataMessage*) &t_float_heading_msg);
     }
 } 

@@ -15,6 +15,7 @@
 #include "WheeledRobot.hpp"
 #include "Timer.hpp"
 #include "TimedBlock.hpp"
+#include "UGVPatrolStates.hpp"
 
 class UGVNavigator : public msg_emitter, public msg_receiver, public TimedBlock  {
     public:
@@ -39,7 +40,8 @@ class UGVNavigator : public msg_emitter, public msg_receiver, public TimedBlock 
         PathGenerator2D m_PathGenerator;
         Timer m_Timer;
         Line2D m_FireDirection;
-        Vector2D<double> m_HomePosition, m_EntrancePosition, m_FireLocation;
+        UGVPatrolState m_PatrolState = UGVPatrolState::IDLE;
+        Vector2D<double> m_HomePosition, m_EntrancePosition, m_FireLocation, m_ExtLocation;
         int m_SearchTimeOut = 5000, m_ReachingGoalPositionTimeOut = 40000;
-        float m_HomeHeading, m_EntranceHeading, m_FireHeading;
+        float m_HomeHeading, m_EntranceHeading, m_FireHeading, m_ExtHeading;
 };
