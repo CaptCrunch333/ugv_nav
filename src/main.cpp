@@ -26,7 +26,7 @@ int main(int argc, char **argv){
     // ******************************** UGV NAVIGATOR *********************************
     WheeledRobot* mainUGV = new WheeledRobot;
     //mainUGV->setTolerance(0.1, 0.175);
-    mainUGV->setTolerance(0.1, 175);
+    mainUGV->setTolerance(0.35, 0.175);
     UGVNavigator* mainUGVNavigator = new UGVNavigator(mainUGV, block_frequency::hz10);
     Vector2D<double> HomeBaseLodaction({0,0});
     float HomeBaseHeading = 0;
