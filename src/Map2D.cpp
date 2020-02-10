@@ -3,8 +3,32 @@
 Map2D::Map2D() {
     //TODO: remove after file change
     Vector2D<double> t_point;
-    t_point.x = 9.05;
-    t_point.y = 5.55;
+    // t_point.x = 9.05;
+    // t_point.y = 5.55;
+
+    r1l1p1.x = 9.05;
+    r1l1p1.y = 5.55;
+
+    r1l1p2.x = 9.05;
+    r1l1p2.y = 6.3;
+
+    r1l2p1.x = 9.05;
+    r1l2p1.y = 5.55;
+
+    r1l2p2.x = 9.86;
+    r1l2p2.y = 5.55;
+
+    r2l1p1.x = 6.5;
+    r2l1p1.y = 2.3;
+
+    r2l1p2.x = 6.5;
+    r2l1p2.y = 12.1;
+
+    r2l2p1.x = 6.5;
+    r2l2p1.y = 2.3;
+
+    r2l2p2.x = 12.3;
+    r2l2p2.y = 2.3;
     MoveMap(t_point);
 }
 
@@ -53,28 +77,6 @@ Vector3D<double> Map2D::getNormalToObject() {
 
 void Map2D::MoveMap(Vector2D<double> t_point) {
     //TODO: make it (+,+) to all
-    r1l1p1 = t_point;
-
-    r1l1p2.x = r1l1p1.x;
-    r1l1p2.y =  r1l1p1.y + 0.75;
-
-    r1l2p1 = r1l1p1;
-
-    r1l2p2.x = r1l1p1.x + 0.81;
-    r1l2p2.y =  r1l2p1.y;
-
-    r2l1p1.x = r1l1p1.x - 2.55;
-    r2l1p1.y =  r1l1p1.y - 3.25;
-
-    r2l1p2.x = r2l1p1.x;
-    r2l1p2.y = r2l1p1.y + 9.8;
-
-    r2l2p1 = r2l1p1;
-
-    r2l2p2.x = r2l2p1.x + 5.8;
-    r2l2p2.y = r2l2p1.y;
-
-
     r1l1.setPoint1(r1l1p1);
     r1l1.setPoint2(r1l1p2);
 

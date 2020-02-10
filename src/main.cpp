@@ -31,12 +31,12 @@ int main(int argc, char **argv){
     Vector2D<double> HomeBaseLodaction({-1,0});
     float HomeBaseHeading = 0;
     mainUGVNavigator->setHomeBaseLocation(HomeBaseLodaction, HomeBaseHeading);
-    Vector2D<double> EntraceLocation({6,6});
+    Vector2D<double> EntraceLocation({8,3});
     float EntranceHeading = 0;
     mainUGVNavigator->setEntranceLocation(EntraceLocation, EntranceHeading);
     mainUGVNavigator->setMap(mainMap);
     std::vector<Vector2D<float>> mainScanPath;
-    mainScanPath.push_back(Vector2D<float>({6, 6}));
+    mainScanPath.push_back(Vector2D<float>({8, 3}));
     mainScanPath.push_back(Vector2D<float>({9, 11}));
     mainScanPath.push_back(Vector2D<float>({11, 6}));
     mainScanPath.push_back(Vector2D<float>({9, 4}));
