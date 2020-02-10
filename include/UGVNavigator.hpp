@@ -28,9 +28,9 @@ class UGVNavigator : public msg_emitter, public msg_receiver, public TimedBlock 
         //The Final Point Should have a path to the initial Point
         void setScanningPath(std::vector<Vector2D<float>>);
         void setMap(Map2D*);
-        void setSearchTimeOut(int);
-        void setReachingGoalPositionTimeOut(int);
-        void receive_msg_data(DataMessage*);
+        void setSearchTimeOut(int); //TODO: remove
+        void setReachingGoalPositionTimeOut(int); //TODO: remove
+        void receive_msg_data(DataMessage*); 
         void receive_msg_data(DataMessage* ,int);
         void loopInternal();
 
