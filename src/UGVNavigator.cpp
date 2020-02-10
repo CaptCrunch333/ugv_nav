@@ -145,6 +145,13 @@ void UGVNavigator::receive_msg_data(DataMessage* t_msg, int t_channel_id) {
             }
         }
     }
+    else if(t_channel_id == (int)CHANNELS::POSITION_ADJUSTMENT) {
+        if(t_msg->getType() == msg_type::FLOAT) {
+            FloatMsg* t_float_msg = (FloatMsg*) t_msg;
+            Logger::getAssignedLogger()->log("Adjustment Command Received: %f", t_float_msg->data, LoggerLevel::Info);
+            m_robot->slide(t_float_msg->data);
+        }
+    }
 }
 
 void UGVNavigator::setHomeBaseLocation(Vector2D<double> t_pos, float t_heading) {

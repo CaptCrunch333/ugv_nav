@@ -39,6 +39,15 @@ void WheeledRobot::move() {
     Logger::getAssignedLogger()->log("UGV Moving to: %f, %f, with orientation: %f", m_GoalPosition.x, m_GoalPosition.y, m_GoalHeading, LoggerLevel::Info);
 }
 
+void WheeledRobot::slide(float t_val) {
+    Vector2D<float> t_GoalPos;
+    t_GoalPos.x = m_CurrentPosition.x+t_val*cos(m_CurrentHeading);
+    t_GoalPos.y = m_CurrentPosition.y+t_val*sin(m_CurrentHeading);
+    this->setGoalPosition(t_GoalPos);
+    this->setGoalHeading(m_CurrentHeading);
+    this->move();
+}
+
 void WheeledRobot::stop() {
     Vector2DMsg t_GoalPosMsg;
     t_GoalPosMsg.data = m_CurrentPosition;

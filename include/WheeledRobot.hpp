@@ -20,6 +20,7 @@ class WheeledRobot : public msg_receiver, public msg_emitter
         Vector2D<float> getCurrentPosition();
         float getCurrentHeading();
         void move();
+        void slide(float);
         void stop();
         bool reachedPosition();
         void receive_msg_data(DataMessage*);
