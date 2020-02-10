@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Line2D.hpp"
+#include <vector>
 
 class Vertex2D
 {

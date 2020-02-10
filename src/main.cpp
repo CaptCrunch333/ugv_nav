@@ -26,7 +26,7 @@ int main(int argc, char **argv){
     // ******************************** UGV NAVIGATOR *********************************
     WheeledRobot* mainUGV = new WheeledRobot;
     //mainUGV->setTolerance(0.1, 0.175);
-    mainUGV->setTolerance(0.35, 0.175);
+    mainUGV->setTolerance(1.0, 0.3);
     UGVNavigator* mainUGVNavigator = new UGVNavigator(mainUGV, block_frequency::hz10);
     Vector2D<double> HomeBaseLodaction({-1,0});
     float HomeBaseHeading = 0;
@@ -37,9 +37,19 @@ int main(int argc, char **argv){
     mainUGVNavigator->setMap(mainMap);
     std::vector<Vector2D<float>> mainScanPath;
     mainScanPath.push_back(Vector2D<float>({8, 3}));
-    mainScanPath.push_back(Vector2D<float>({9, 11}));
+    mainScanPath.push_back(Vector2D<float>({9, 3}));
+    mainScanPath.push_back(Vector2D<float>({10, 3}));
+    mainScanPath.push_back(Vector2D<float>({11, 3}));
+    mainScanPath.push_back(Vector2D<float>({11, 4}));
+    mainScanPath.push_back(Vector2D<float>({11, 5}));
     mainScanPath.push_back(Vector2D<float>({11, 6}));
-    mainScanPath.push_back(Vector2D<float>({9, 4}));
+    mainScanPath.push_back(Vector2D<float>({11, 7}));
+    mainScanPath.push_back(Vector2D<float>({10, 7}));
+    mainScanPath.push_back(Vector2D<float>({9, 7}));
+    mainScanPath.push_back(Vector2D<float>({8, 7}));
+    mainScanPath.push_back(Vector2D<float>({8, 6}));
+    mainScanPath.push_back(Vector2D<float>({8, 5}));
+    mainScanPath.push_back(Vector2D<float>({8, 4}));
     mainUGVNavigator->setScanningPath(mainScanPath);
     mainUGVNavigator->setSearchTimeOut(1000000000);
     mainUGVNavigator->setReachingGoalPositionTimeOut(1000000000);

@@ -2,6 +2,7 @@
 
 #include "Line2D.hpp"
 #include "logger.hpp"
+#include <vector>
 
 class PathGenerator2D
 {
