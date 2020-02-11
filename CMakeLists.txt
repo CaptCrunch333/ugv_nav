@@ -7,8 +7,11 @@ add_compile_options(-std=c++11)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
+  actionlib
   std_msgs
   geometry_msgs
+  actionlib_msgs
+  move_base_msgs
   common_srv
 )
 
@@ -27,6 +30,7 @@ catkin_package(
     roscpp
     std_msgs
     common_srv
+    move_base_msgs
   DEPENDS
     system_lib
 )

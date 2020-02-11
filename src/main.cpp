@@ -5,6 +5,9 @@
 #include "EulerToQuat.hpp"
 #include "std_logger.hpp"
 #include "UGVNavigator.hpp"
+//#include "ROSUnitActClnt_BaseStatus.hpp"
+#include "ROSUnitActClnt_MoveBase.hpp"
+//#include "ROSUnitActClnt_StopBase.hpp"
 #include "looper.hpp"
 #include <vector>
 
@@ -25,12 +28,10 @@ int main(int argc, char **argv){
     // ********************************************************************************
     // ******************************** UGV NAVIGATOR *********************************
     WheeledRobot* mainUGV = new WheeledRobot;
-    //mainUGV->setTolerance(0.1, 0.175);
-    mainUGV->setTolerance(1.0, 0.3);
     UGVNavigator* mainUGVNavigator = new UGVNavigator(mainUGV, block_frequency::hz10);
-    Vector2D<double> HomeBaseLodaction({-1,0});
+    Vector2D<double> HomeBaseLoaction({-1,0});
     float HomeBaseHeading = 0;
-    mainUGVNavigator->setHomeBaseLocation(HomeBaseLodaction, HomeBaseHeading);
+    mainUGVNavigator->setHomeBaseLocation(HomeBaseLoaction, HomeBaseHeading);
     Vector2D<double> EntraceLocation({8,3});
     float EntranceHeading = 0;
     mainUGVNavigator->setEntranceLocation(EntraceLocation, EntranceHeading);
@@ -68,7 +69,10 @@ int main(int argc, char **argv){
     ROSUnit* StateUpdaterClnt = mainROSFactory->CreateROSUnit(ROSUnit_tx_rx_type::Client, ROSUnit_Int, "gf_indoor_fire_mm/update_ugv_nav_state");
     // Package Specific Units
     ROSUnit_AMCLPose* ROS_AMCLPose = new ROSUnit_AMCLPose(nh);
-    ROSUnit_UGVMoveBase* BaseCommandsClnt = new ROSUnit_UGVMoveBase(nh);
+    //ROSUnit_UGVMoveBase* BaseCommandsClnt = new ROSUnit_UGVMoveBase(nh);
+    //ROSUnitActClnt_BaseStatus* BaseStatusUpdaterClnt = new ROSUnitActClnt_BaseStatus("/move_base/status", nh);
+    ROSUnitActClnt_MoveBase* BaseMoveClnt = new ROSUnitActClnt_MoveBase("/move_base/goal", nh);
+    //ROSUnitActClnt_StopBase* BaseStopClnt = new ROSUnitActClnt_StopBase("/move_base/cancel", nh);
     // ********************************************************************************
     // ***************************** ROS PACKAGES BRIDGE ******************************
     QuatToEuler* QTE = new QuatToEuler();
@@ -80,7 +84,6 @@ int main(int argc, char **argv){
     QTE->add_callback_msg_receiver((msg_receiver*) IntertialHeadingPub);
     ROS_AMCLPose->add_callback_msg_receiver((msg_receiver*) mainUGV);
     QTE->add_callback_msg_receiver((msg_receiver*) mainUGV);
-    QTE->add_callback_msg_receiver((msg_receiver*) mainUGVNavigator);
 
     FireDirectionUpdaterSrv->add_callback_msg_receiver((msg_receiver*) mainUGVNavigator);
     FireDirectionUpdaterSrv->setEmittingChannel((int)CHANNELS::FIRE_DIRECTION_UPDATER);
@@ -99,9 +102,12 @@ int main(int argc, char **argv){
 
     mainUGVNavigator->add_callback_msg_receiver((msg_receiver*) DistanceToFirePub);
 
-    mainUGV->add_callback_msg_receiver((msg_receiver*) BaseCommandsClnt);
+    mainUGV->add_callback_msg_receiver((msg_receiver*) BaseMoveClnt);
     mainUGV->add_callback_msg_receiver((msg_receiver*) ETQ);
-    ETQ->add_callback_msg_receiver((msg_receiver*) BaseCommandsClnt);
+    ETQ->add_callback_msg_receiver((msg_receiver*) BaseMoveClnt);
+    //mainUGV->add_callback_msg_receiver((msg_receiver*) BaseStopClnt);
+    //BaseStatusUpdaterClnt->add_callback_msg_receiver((msg_receiver*) mainUGV);
+    //BaseStatusUpdaterClnt->setEmittingChannel((int)CHANNELS::GOAL_STATUS);
 
     (&mainUGVNavMissionStateManager)->add_callback_msg_receiver((msg_receiver*) StateUpdaterClnt);
     // ********************************************************************************

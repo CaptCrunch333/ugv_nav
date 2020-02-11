@@ -12,29 +12,27 @@ void UGVNavigator::loopInternal() {
             break;
         case UGVNavState::HEADINGTOWARDSENTRANCE: {
             if(m_robot->reachedPosition()) {
-                m_robot->stop();
                 mainUGVNavMissionStateManager.updateMissionState(UGVNavState::SEARCHINGFORFIRE);
-                m_Timer.tick();
             }
         }
             break;
         case UGVNavState::SEARCHINGFORFIRE: {
             if(m_PatrolState != UGVPatrolState::IDLE) {
                 if(m_robot->reachedPosition()) {
-                    Vector3D<float> tmp = m_PathGenerator.getNextPose(m_FireDirection);
-                    m_robot->setGoalPosition(tmp.project_xy());
-                    m_robot->setGoalHeading(tmp.z);
+                    // Vector3D<float> tmp = m_PathGenerator.getNextPose(m_FireDirection);
+                    // // m_robot->setGoalPosition(tmp.project_xy());
+                    // // m_robot->setGoalHeading(tmp.z);
+                    // m_robot->move();
+                    std::vector<Vector3D<float>> t_path;
+                    for(int i = 0; i < m_PathGenerator.getTrackLength(); i++) {
+                        Line2D t_line;
+                        t_path.push_back(m_PathGenerator.getNextPose(t_line));
+                    }
                     m_robot->move();
-                    m_Timer.tick();
                 }
-                else if(m_Timer.tockMilliSeconds() > m_ReachingGoalPositionTimeOut) {
-                    Logger::getAssignedLogger()->log("UGV Failed to Reach Search Goal Position, Moving To The Next Point", LoggerLevel::Warning);
-                    Vector3D<float> tmp = m_PathGenerator.getNextPose(m_FireDirection);
-                    m_robot->setGoalPosition(tmp.project_xy());
-                    m_robot->setGoalHeading(tmp.z);
-                    m_robot->move();
-                    m_Timer.tick();
-                }
+            }
+            else if(m_PatrolState == UGVPatrolState::IDLE) {
+                m_robot->stop();
             }
         }
             break;
@@ -78,16 +76,15 @@ void UGVNavigator::receive_msg_data(DataMessage* t_msg, int t_channel_id) {
                     break; }
 
                 case UGVNavState::HEADINGTOWARDSENTRANCE: {
-                    m_robot->setGoalPosition(m_EntrancePosition);
-                    m_robot->setGoalHeading(m_EntranceHeading);
+                    m_robot->setGoal(Vector3D<float>({m_HomePosition.x, m_HomePosition.y, m_HomeHeading}));
                     m_robot->move();
                     mainUGVNavMissionStateManager.updateMissionState(UGVNavState::HEADINGTOWARDSENTRANCE);
                     Logger::getAssignedLogger()->log("MM Changed UGV Nav State To Heading Towards Entrance", LoggerLevel::Info);
                     break; }
 
                  case UGVNavState::HEADINGTOWARDSFIRE: {
-                    m_robot->setGoalPosition(m_ExtLocation);
-                    m_robot->setGoalHeading(m_ExtHeading);
+                    // m_robot->setGoalPosition(m_ExtLocation);
+                    // m_robot->setGoalHeading(m_ExtHeading);
                     m_robot->move();
                     mainUGVNavMissionStateManager.updateMissionState(UGVNavState::HEADINGTOWARDSFIRE);
                     Logger::getAssignedLogger()->log("MM Changed UGV Nav State To Heading Towards Fire", LoggerLevel::Info);
@@ -99,8 +96,8 @@ void UGVNavigator::receive_msg_data(DataMessage* t_msg, int t_channel_id) {
                     break; }    
 
                 case UGVNavState::RETURNINGTOBASE: {
-                    m_robot->setGoalPosition(m_HomePosition);
-                    m_robot->setGoalHeading(m_HomeHeading);
+                    // m_robot->setGoalPosition(m_HomePosition);
+                    // m_robot->setGoalHeading(m_HomeHeading);
                     m_robot->move();
                     mainUGVNavMissionStateManager.updateMissionState(UGVNavState::RETURNINGTOBASE);
                     Logger::getAssignedLogger()->log("MM Changed UGV Nav State To Returning To Base", LoggerLevel::Info);
@@ -138,10 +135,9 @@ void UGVNavigator::receive_msg_data(DataMessage* t_msg, int t_channel_id) {
             if(t_patrol_msg->data == (int) UGVPatrolState::HEADINGTOWARDSFIREDIRECTION) {
                 m_PatrolState = UGVPatrolState::HEADINGTOWARDSFIREDIRECTION;
                 Vector3D<float> tmp = m_PathGenerator.getNextPose(m_FireDirection);
-                m_robot->setGoalPosition(tmp.project_xy());
-                m_robot->setGoalHeading(tmp.z);
+                // m_robot->setGoalPosition(tmp.project_xy());
+                // m_robot->setGoalHeading(tmp.z);
                 m_robot->move();
-                m_Timer.tick();
             }
         }
     }
@@ -149,7 +145,7 @@ void UGVNavigator::receive_msg_data(DataMessage* t_msg, int t_channel_id) {
         if(t_msg->getType() == msg_type::FLOAT) {
             FloatMsg* t_float_msg = (FloatMsg*) t_msg;
             Logger::getAssignedLogger()->log("Adjustment Command Received: %f", t_float_msg->data, LoggerLevel::Info);
-            m_robot->slide(t_float_msg->data);
+            //m_robot->slide(t_float_msg->data);
         }
     }
 }
