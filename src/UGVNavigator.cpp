@@ -27,6 +27,7 @@ void UGVNavigator::loopInternal() {
                     for(int i = 0; i < m_PathGenerator.getTrackLength(); i++) {
                         Line2D t_line;
                         t_path.push_back(m_PathGenerator.getNextPose(t_line));
+                        Logger::getAssignedLogger()->log("UGV Path appended: %f, %f, with orientation: %f", t_path.front().x, t_path.front().y, t_path.front().z, LoggerLevel::Info);
                     }
                     m_robot->setGoal(t_path);
                     m_robot->move();

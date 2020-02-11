@@ -13,7 +13,7 @@ class PathGenerator2D
         Vector3D<float> getNextPose(Line2D);
     private:
         std::vector<Vector2D<float>>::iterator m_current_vertex;
-        int direction = 0;
+        int direction = 1;
         std::vector<Vector2D<float>> m_track;
         std::vector<Vector2D<float>>::iterator getNextVertex();
 };

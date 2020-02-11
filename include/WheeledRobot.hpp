@@ -14,6 +14,7 @@
 class WheeledRobot : public msg_receiver, public msg_emitter
 {
     public:
+        WheeledRobot();
         void setGoal(std::vector<Vector3D<float>>);
         void setGoal(Vector3D<float>);
         Vector2D<float> getGoalPosition(); //TODO: this gives the last goal position, to be split into last and current
@@ -33,5 +34,5 @@ class WheeledRobot : public msg_receiver, public msg_emitter
         std::vector<Vector3D<float>> m_queue;
         float m_CurrentHeading;
 
-        void clearQueue();
+        bool clearQueue();
 };

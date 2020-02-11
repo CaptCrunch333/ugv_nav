@@ -1,5 +1,9 @@
 #include "WheeledRobot.hpp"
 
+WheeledRobot::WheeledRobot() {
+    m_status.status = actionlib_msgs::GoalStatus::ACTIVE;
+}
+
 void WheeledRobot::setGoal(std::vector<Vector3D<float>> t_goal) {
     m_GoalPose.clear();
     m_GoalPose = t_goal;
@@ -28,6 +32,7 @@ float WheeledRobot::getCurrentHeading() {
 
 void WheeledRobot::move() {
     m_queue = m_GoalPose;
+    this->clearQueue();
 }
 
 void WheeledRobot::stop() {
@@ -42,10 +47,6 @@ bool WheeledRobot::reachedPosition() {
     else {
         return false;
     }
-    std::string t_txt_msg = "Goal ";
-    t_txt_msg.append(m_status.text);
-    t_txt_msg.append(" has status of: %f");
-    Logger::getAssignedLogger()->log(t_txt_msg.c_str(), (float) m_status.status, LoggerLevel::Info);
 }
 
 void WheeledRobot::receive_msg_data(DataMessage* t_msg) {
@@ -59,24 +60,27 @@ void WheeledRobot::receive_msg_data(DataMessage* t_msg) {
 
 void WheeledRobot::receive_msg_data(DataMessage* t_msg,int t_channel_id) {
     if(t_channel_id == (int)CHANNELS::GOAL_STATUS) {
-        if(m_queue.size() == 0) {
-            m_status = ((GoalStatusMsg*) t_msg)->goalStatus;
-        }
-        else if(((GoalStatusMsg*) t_msg)->goalStatus.status == actionlib_msgs::GoalStatus::SUCCEEDED) {
-            this->clearQueue();
+        if(((GoalStatusMsg*) t_msg)->goalStatus.status == actionlib_msgs::GoalStatus::SUCCEEDED) {
+            if(this->clearQueue()) {
+                m_status = ((GoalStatusMsg*) t_msg)->goalStatus;
+            }
         }
     }
 }
 
-void WheeledRobot::clearQueue() {
-    if(m_queue.size() > 0) {
+bool WheeledRobot::clearQueue() {
+    if(m_queue.size() > 1) {
+        m_queue.erase(m_queue.begin());
         Vector2DMsg t_GoalPosMsg;
         t_GoalPosMsg.data = m_queue.front().project_xy();
         Vector3DMessage t_GoalHeadingMsg;
         t_GoalHeadingMsg.setVector3DMessage(Vector3D<float>({0,0, m_queue.front().z}));
         this->emit_message((DataMessage*) &t_GoalPosMsg);
         this->emit_message((DataMessage*) &t_GoalHeadingMsg);
-        Logger::getAssignedLogger()->log("UGV Path appended: %f, %f, with orientation: %f", m_queue.front().x, m_queue.front().y, m_queue.front().z, LoggerLevel::Info);
-        m_queue.erase(m_queue.begin());
     }
+    else if(m_queue.size() == 1) {
+        m_queue.erase(m_queue.begin());
+        return true;
+    }
+    return false;
 }
