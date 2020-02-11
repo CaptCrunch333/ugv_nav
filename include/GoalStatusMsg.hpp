@@ -3,13 +3,13 @@
 #include "DataMessage.hpp"
 #include <actionlib_msgs/GoalStatus.h>
 
-class GoalStatus : public DataMessage
+class GoalStatusMsg : public DataMessage
 {
 
 public:
 
-    GoalStatus();
-    ~GoalStatus();
+    GoalStatusMsg();
+    ~GoalStatusMsg();
     msg_type getType();
     const int getSize();
     actionlib_msgs::GoalStatus goalStatus;

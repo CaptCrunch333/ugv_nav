@@ -28,6 +28,7 @@ void UGVNavigator::loopInternal() {
                         Line2D t_line;
                         t_path.push_back(m_PathGenerator.getNextPose(t_line));
                     }
+                    m_robot->setGoal(t_path);
                     m_robot->move();
                 }
             }
@@ -76,7 +77,7 @@ void UGVNavigator::receive_msg_data(DataMessage* t_msg, int t_channel_id) {
                     break; }
 
                 case UGVNavState::HEADINGTOWARDSENTRANCE: {
-                    m_robot->setGoal(Vector3D<float>({m_HomePosition.x, m_HomePosition.y, m_HomeHeading}));
+                    m_robot->setGoal(Vector3D<float>({m_EntrancePosition.x, m_EntrancePosition.y, m_EntranceHeading}));
                     m_robot->move();
                     mainUGVNavMissionStateManager.updateMissionState(UGVNavState::HEADINGTOWARDSENTRANCE);
                     Logger::getAssignedLogger()->log("MM Changed UGV Nav State To Heading Towards Entrance", LoggerLevel::Info);

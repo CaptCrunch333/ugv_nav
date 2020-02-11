@@ -26,6 +26,7 @@ void ROSUnitActClnt_MoveBase::receive_msg_data(DataMessage* t_msg)
         m_goal.target_pose.pose.orientation.x = t_quat_msg->getData().x;
         m_goal.target_pose.pose.orientation.y = t_quat_msg->getData().y;
         m_goal.target_pose.pose.orientation.z = t_quat_msg->getData().z;
+        Logger::getAssignedLogger()->log("sending action!",LoggerLevel::Info);
         m_MoveBaseGoalActClnt->sendGoal(m_goal);
     }
 }

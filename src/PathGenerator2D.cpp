@@ -13,8 +13,8 @@ int PathGenerator2D::getTrackLength()
 
 Vector3D<float> PathGenerator2D::getNextPose(Line2D t_fire_dir)
 {  
+    direction = 1;
     m_current_vertex = getNextVertex();
-
     Line2D line;
     line.setPoint1(*m_current_vertex);
     line.setPoint2(*(getNextVertex()));

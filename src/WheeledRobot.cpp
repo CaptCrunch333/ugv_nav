@@ -1,25 +1,21 @@
 #include "WheeledRobot.hpp"
 
 void WheeledRobot::setGoal(std::vector<Vector3D<float>> t_goal) {
-    m_GoalPosition.clear();
-    for(int i = 0; i < t_goal.size(); i++) {
-        m_GoalPosition.push_back(t_goal.at(i).project_xy());
-        m_GoalHeading.push_back(t_goal.at(i).z);
-    }
+    m_GoalPose.clear();
+    m_GoalPose = t_goal;
 }
 
 void WheeledRobot::setGoal(Vector3D<float> t_goal) {
-    m_GoalPosition.clear();
-    m_GoalPosition.push_back(t_goal.project_xy());
-    m_GoalHeading.push_back(t_goal.z);
+    m_GoalPose.clear();
+    m_GoalPose.push_back(t_goal);
 }
 
 Vector2D<float> WheeledRobot::getGoalPosition() {
-    return m_GoalPosition.back();
+    return m_GoalPose.back().project_xy();
 }
 
 float WheeledRobot::getGoalHeading() {
-    return m_GoalHeading.back();
+    return m_GoalPose.back().z;
 }
 
 Vector2D<float> WheeledRobot::getCurrentPosition() {
@@ -31,15 +27,7 @@ float WheeledRobot::getCurrentHeading() {
 }
 
 void WheeledRobot::move() {
-    for(int i = 0; i < m_GoalPosition.size(); i++) {
-        Vector2DMsg t_GoalPosMsg;
-        t_GoalPosMsg.data = m_GoalPosition.at(i);
-        Vector3DMessage t_GoalHeadingMsg;
-        t_GoalHeadingMsg.setVector3DMessage(Vector3D<float>({0,0, m_GoalHeading.at(i)}));
-        this->emit_message((DataMessage*) &t_GoalPosMsg);
-        this->emit_message((DataMessage*) &t_GoalHeadingMsg);
-        Logger::getAssignedLogger()->log("UGV Path appended: %f, %f, with orientation: %f", m_GoalPosition.at(i).x, m_GoalPosition.at(i).y, m_GoalHeading.at(i), LoggerLevel::Info);
-    }
+    m_queue = m_GoalPose;
 }
 
 void WheeledRobot::stop() {
@@ -71,6 +59,24 @@ void WheeledRobot::receive_msg_data(DataMessage* t_msg) {
 
 void WheeledRobot::receive_msg_data(DataMessage* t_msg,int t_channel_id) {
     if(t_channel_id == (int)CHANNELS::GOAL_STATUS) {
-        m_status = ((GoalStatus*) t_msg)->goalStatus;
+        if(m_queue.size() == 0) {
+            m_status = ((GoalStatusMsg*) t_msg)->goalStatus;
+        }
+        else if(((GoalStatusMsg*) t_msg)->goalStatus.status == actionlib_msgs::GoalStatus::SUCCEEDED) {
+            this->clearQueue();
+        }
+    }
+}
+
+void WheeledRobot::clearQueue() {
+    if(m_queue.size() > 0) {
+        Vector2DMsg t_GoalPosMsg;
+        t_GoalPosMsg.data = m_queue.front().project_xy();
+        Vector3DMessage t_GoalHeadingMsg;
+        t_GoalHeadingMsg.setVector3DMessage(Vector3D<float>({0,0, m_queue.front().z}));
+        this->emit_message((DataMessage*) &t_GoalPosMsg);
+        this->emit_message((DataMessage*) &t_GoalHeadingMsg);
+        Logger::getAssignedLogger()->log("UGV Path appended: %f, %f, with orientation: %f", m_queue.front().x, m_queue.front().y, m_queue.front().z, LoggerLevel::Info);
+        m_queue.erase(m_queue.begin());
     }
 }

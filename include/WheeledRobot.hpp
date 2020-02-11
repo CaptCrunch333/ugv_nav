@@ -6,7 +6,7 @@
 #include "Vector2DMsg.hpp"
 #include "Vector3DMessage.hpp"
 #include "FloatMsg.hpp"
-#include "GoalStatus.hpp"
+#include "GoalStatusMsg.hpp"
 #include "Line2D.hpp"
 #include "logger.hpp"
 #include "QuaternionMessage.hpp"
@@ -28,8 +28,10 @@ class WheeledRobot : public msg_receiver, public msg_emitter
 
     private:
         Vector2D<float> m_CurrentPosition;
-        std::vector<Vector2D<float>> m_GoalPosition;
-        std::vector<float> m_GoalHeading;
+        std::vector<Vector3D<float>> m_GoalPose;
         actionlib_msgs::GoalStatus m_status;
+        std::vector<Vector3D<float>> m_queue;
         float m_CurrentHeading;
+
+        void clearQueue();
 };

@@ -12,9 +12,11 @@ ROSUnitActClnt_BaseStatus::~ROSUnitActClnt_BaseStatus(){ }
 
 void ROSUnitActClnt_BaseStatus::BaseStatusCB(const actionlib_msgs::GoalStatusArrayConstPtr& t_msg) 
 {
-    IntegerMsg t_int_msg;
-    t_int_msg.data = t_msg->status_list.back().status;
-    instance_ptr->emit_message((DataMessage*) &t_int_msg);
+    GoalStatusMsg t_status_msg;
+    if(t_msg->status_list.size() > 0) {
+        t_status_msg.goalStatus = t_msg->status_list.back();
+        instance_ptr->emit_message((DataMessage*) &t_status_msg);
+    }
 }
 
 void ROSUnitActClnt_BaseStatus::receive_msg_data(DataMessage* t_msg) {

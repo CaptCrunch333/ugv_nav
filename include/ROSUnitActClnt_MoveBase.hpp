@@ -6,6 +6,7 @@
 #include <move_base_msgs/MoveBaseAction.h>
 #include "Vector2DMsg.hpp"
 #include "QuaternionMessage.hpp"
+#include "logger.hpp"
 
 class ROSUnitActClnt_MoveBase : public ROSUnit
 {

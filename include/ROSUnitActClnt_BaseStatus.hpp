@@ -3,7 +3,8 @@
 #include "ROSUnit.hpp"
 #include <actionlib_msgs/GoalStatusArray.h>
 #include "EmptyMsg.hpp"
-#include "IntegerMsg.hpp"
+#include "GoalStatusMsg.hpp"
+#include "logger.hpp"
 
 class ROSUnitActClnt_BaseStatus : public ROSUnit
 {
