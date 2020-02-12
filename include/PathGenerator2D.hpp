@@ -2,18 +2,25 @@
 
 #include "Line2D.hpp"
 #include "logger.hpp"
+#include "Rectangle.hpp"
+#include "print_utility.hpp"
 #include <vector>
 
 class PathGenerator2D
 {
     public:
-        void setTrack(std::vector<Vector2D<float>>);
-        int getTrackLength();
+        void setTrack(Rectangle);
         //gets the next pose 
-        Vector3D<float> getNextPose(Line2D);
+        std::vector<Vector3D<double>> generateParametricPath(Vector2D<double>,double parameter); //+: ccw | -:cw
+        Vector3D<double> getNextPose();
+        void clearPath();
     private:
-        std::vector<Vector2D<float>>::iterator m_current_vertex;
-        int direction = 1;
-        std::vector<Vector2D<float>> m_track;
-        std::vector<Vector2D<float>>::iterator getNextVertex();
+        std::vector<Vector3D<double>> add_heading_for_waypoints(std::vector<Vector2D<double>>);
+        //std::vector<Vector2D<float>>::iterator m_current_vertex;
+        int direction = 0;
+        //std::vector<Vector2D<float>> m_track;
+        //std::vector<Vector2D<float>>::iterator getNextVertex();
+        Rectangle in_building_track;
+        std::vector<Vector3D<double>> waypoints_with_heading;
+        int waypoint_counter=0;
 };

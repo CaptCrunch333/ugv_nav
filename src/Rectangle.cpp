@@ -148,7 +148,7 @@ bool Rectangle::checkPointIntersection(Vector2D<double> t_point){
     return false;
 }
 
-std::vector<Vector2D<double>> Rectangle::generateClosedPathFromStartingPoint(Vector2D<double> t_point){
+std::vector<Vector2D<double>> Rectangle::generateClosedPathFromStartingPoint(Vector2D<double> t_point,rotation_direction rot_dir){
     std::vector<Vector2D<double>> wayPoints2D;
     wayPoints2D.push_back(t_point);
     //Workout all sides
@@ -157,32 +157,71 @@ std::vector<Vector2D<double>> Rectangle::generateClosedPathFromStartingPoint(Vec
     Line2D side4=side2;
     side4.translateBy(side1.getPoint2()-side1.getPoint1());
     if (side1.checkPointIntesection(t_point)){//TODO: Refactor
-        wayPoints2D.push_back(side1.getPoint2());
-        wayPoints2D.push_back(side4.getPoint2());
-        wayPoints2D.push_back(side3.getPoint1());
-        wayPoints2D.push_back(side2.getPoint1());
-        wayPoints2D.push_back(t_point);
+        if (rot_dir==rotation_direction::ccw_rot){
+            wayPoints2D.push_back(side1.getPoint2());
+            wayPoints2D.push_back(side4.getPoint2());
+            wayPoints2D.push_back(side3.getPoint1());
+            wayPoints2D.push_back(side2.getPoint1());
+            wayPoints2D.push_back(t_point);
+        }
+        else{
+            wayPoints2D.push_back(side2.getPoint1());
+            wayPoints2D.push_back(side3.getPoint1());
+            wayPoints2D.push_back(side4.getPoint2());
+            wayPoints2D.push_back(side1.getPoint2());
+            wayPoints2D.push_back(t_point);
+        }
     }
     else if (side2.checkPointIntesection(t_point)){
-        wayPoints2D.push_back(side2.getPoint1());
-        wayPoints2D.push_back(side1.getPoint2());
-        wayPoints2D.push_back(side4.getPoint2());
-        wayPoints2D.push_back(side3.getPoint1());
-        wayPoints2D.push_back(t_point);
+        if (rot_dir==rotation_direction::ccw_rot){
+            wayPoints2D.push_back(side2.getPoint1());
+            wayPoints2D.push_back(side1.getPoint2());
+            wayPoints2D.push_back(side4.getPoint2());
+            wayPoints2D.push_back(side3.getPoint1());
+            wayPoints2D.push_back(t_point);
+        }
+        else{
+            wayPoints2D.push_back(side3.getPoint1());
+            wayPoints2D.push_back(side4.getPoint2());
+            wayPoints2D.push_back(side1.getPoint2());
+            wayPoints2D.push_back(side2.getPoint1());
+            wayPoints2D.push_back(t_point);
+        }
+
     }
     else if (side3.checkPointIntesection(t_point)){
-        wayPoints2D.push_back(side3.getPoint1());
-        wayPoints2D.push_back(side2.getPoint1());
-        wayPoints2D.push_back(side1.getPoint2());
-        wayPoints2D.push_back(side4.getPoint2());
-        wayPoints2D.push_back(t_point);
+        if (rot_dir==rotation_direction::ccw_rot){
+            wayPoints2D.push_back(side3.getPoint1());
+            wayPoints2D.push_back(side2.getPoint1());
+            wayPoints2D.push_back(side1.getPoint2());
+            wayPoints2D.push_back(side4.getPoint2());
+            wayPoints2D.push_back(t_point);
+        }
+        else{
+            wayPoints2D.push_back(side4.getPoint2());
+            wayPoints2D.push_back(side1.getPoint2());
+            wayPoints2D.push_back(side2.getPoint1());
+            wayPoints2D.push_back(side3.getPoint1());
+            wayPoints2D.push_back(t_point);
+        }
+
     }
     else if (side4.checkPointIntesection(t_point)){
-        wayPoints2D.push_back(side4.getPoint2());
-        wayPoints2D.push_back(side3.getPoint1());
-        wayPoints2D.push_back(side2.getPoint1());
-        wayPoints2D.push_back(side1.getPoint2());
-        wayPoints2D.push_back(t_point);
+        if (rot_dir==rotation_direction::ccw_rot){
+            wayPoints2D.push_back(side4.getPoint2());
+            wayPoints2D.push_back(side3.getPoint1());
+            wayPoints2D.push_back(side2.getPoint1());
+            wayPoints2D.push_back(side1.getPoint2());
+            wayPoints2D.push_back(t_point);
+        }
+        else{
+            wayPoints2D.push_back(side1.getPoint2());
+            wayPoints2D.push_back(side2.getPoint1());
+            wayPoints2D.push_back(side3.getPoint1());
+            wayPoints2D.push_back(side4.getPoint2());
+            wayPoints2D.push_back(t_point);
+        }
+
     }
     return wayPoints2D;
 }
@@ -196,6 +235,7 @@ std::vector<Vector2D<double>> Rectangle::generatePathSegmentFromTwoPoint(Vector2
     Line2D side4=side2;
     side4.translateBy(side1.getPoint2()-side1.getPoint1());
     // Note that the waypoints are not fully optimized for shortest path
+
     if (side1.checkPointIntesection(t_point_start)){//TODO: Refactor
         if (side2.checkPointIntesection(t_point_end)){
             wayPoints2D.push_back(side1.getPoint1());
@@ -247,6 +287,138 @@ std::vector<Vector2D<double>> Rectangle::generatePathSegmentFromTwoPoint(Vector2
     wayPoints2D.push_back(t_point_end);
     return wayPoints2D;
 }
+//Important: This does not handle the case where final and start point are on same line
+std::vector<Vector2D<double>> Rectangle::generatePathSegmentFromTwoPoint(Vector2D<double> t_point_start,Vector2D<double> t_point_end,rotation_direction rot_dir){
+    std::vector<Vector2D<double>> wayPoints2D;
+    wayPoints2D.push_back(t_point_start);
+    //Workout all sides
+    Line2D side3=side1;
+    side3.translateBy(side2.getPoint2()-side2.getPoint1());
+    Line2D side4=side2;
+    side4.translateBy(side1.getPoint2()-side1.getPoint1());
+    // Note that the waypoints are not fully optimized for shortest path
+    if (rot_dir==rotation_direction::ccw_rot){
+        if (side1.checkPointIntesection(t_point_start)){//TODO: Refactor
+            if (side2.checkPointIntesection(t_point_end)){
+                wayPoints2D.push_back(side1.getPoint2());
+                wayPoints2D.push_back(side3.getPoint2());
+                wayPoints2D.push_back(side2.getPoint2());
+            }
+            else if (side3.checkPointIntesection(t_point_end)){
+                wayPoints2D.push_back(side1.getPoint2());
+                wayPoints2D.push_back(side3.getPoint2());
+            }
+            else if (side4.checkPointIntesection(t_point_end)){
+                wayPoints2D.push_back(side1.getPoint2());
+            }
+            
+        }
+        else if (side2.checkPointIntesection(t_point_start)){
+            if (side1.checkPointIntesection(t_point_end)){
+                wayPoints2D.push_back(side1.getPoint1());
+            }
+            else if (side3.checkPointIntesection(t_point_end)){
+                wayPoints2D.push_back(side1.getPoint1());
+                wayPoints2D.push_back(side1.getPoint2());
+                wayPoints2D.push_back(side3.getPoint2());
+            }
+            else if (side4.checkPointIntesection(t_point_end)){
+                wayPoints2D.push_back(side1.getPoint1());
+                wayPoints2D.push_back(side1.getPoint2());
+            }
+        }
+        else if (side3.checkPointIntesection(t_point_start)){
+            if (side1.checkPointIntesection(t_point_end)){
+                wayPoints2D.push_back(side2.getPoint2());
+                wayPoints2D.push_back(side1.getPoint1());
+            }
+            else if (side2.checkPointIntesection(t_point_end)){
+                wayPoints2D.push_back(side2.getPoint2());
+            }
+            else if (side4.checkPointIntesection(t_point_end)){
+                wayPoints2D.push_back(side2.getPoint2());
+                wayPoints2D.push_back(side1.getPoint1());
+                wayPoints2D.push_back(side1.getPoint2());
+            }
+        }
+        else if (side4.checkPointIntesection(t_point_start)){
+            if (side1.checkPointIntesection(t_point_end)){
+                wayPoints2D.push_back(side3.getPoint2());
+                wayPoints2D.push_back(side2.getPoint2());
+                wayPoints2D.push_back(side2.getPoint1());
+            }
+            else if (side2.checkPointIntesection(t_point_end)){
+                wayPoints2D.push_back(side3.getPoint2());
+                wayPoints2D.push_back(side2.getPoint2());
+            }
+            else if (side3.checkPointIntesection(t_point_end)){
+                wayPoints2D.push_back(side3.getPoint2());
+            }
+        }
+    }
+    else //CW
+    {
+        if (side1.checkPointIntesection(t_point_start)){
+            if (side2.checkPointIntesection(t_point_end)){
+                wayPoints2D.push_back(side1.getPoint1());
+            }
+            else if (side3.checkPointIntesection(t_point_end)){
+                wayPoints2D.push_back(side1.getPoint1());
+                wayPoints2D.push_back(side2.getPoint2());
+            }
+            else if (side4.checkPointIntesection(t_point_end)){
+                wayPoints2D.push_back(side1.getPoint1());
+                wayPoints2D.push_back(side2.getPoint2());
+                wayPoints2D.push_back(side3.getPoint2());
+            }
+        }
+        else if (side2.checkPointIntesection(t_point_start)){
+            if (side1.checkPointIntesection(t_point_end)){
+                wayPoints2D.push_back(side2.getPoint2());
+                wayPoints2D.push_back(side3.getPoint2());
+                wayPoints2D.push_back(side1.getPoint2());
+            }
+            else if (side3.checkPointIntesection(t_point_end)){
+                wayPoints2D.push_back(side2.getPoint2());
+            }
+            else if (side4.checkPointIntesection(t_point_end)){
+                wayPoints2D.push_back(side2.getPoint2());
+                wayPoints2D.push_back(side3.getPoint2());
+            }
+        }
+        else if (side3.checkPointIntesection(t_point_start)){
+            if (side1.checkPointIntesection(t_point_end)){
+                wayPoints2D.push_back(side3.getPoint2());
+                wayPoints2D.push_back(side1.getPoint2());
+            }
+            else if (side2.checkPointIntesection(t_point_end)){
+                wayPoints2D.push_back(side3.getPoint2());
+                wayPoints2D.push_back(side1.getPoint2());
+                wayPoints2D.push_back(side1.getPoint1());
+            }
+            else if (side4.checkPointIntesection(t_point_end)){
+                wayPoints2D.push_back(side3.getPoint2());
+            }
+        }
+        else if (side4.checkPointIntesection(t_point_start)){
+            if (side1.checkPointIntesection(t_point_end)){
+                wayPoints2D.push_back(side1.getPoint2());
+            }
+            else if (side2.checkPointIntesection(t_point_end)){
+                wayPoints2D.push_back(side1.getPoint2());
+                wayPoints2D.push_back(side1.getPoint1());
+            }
+            else if (side3.checkPointIntesection(t_point_end)){
+                wayPoints2D.push_back(side1.getPoint2());
+                wayPoints2D.push_back(side1.getPoint1());
+                wayPoints2D.push_back(side2.getPoint2());
+            }
+        }
+    }
+
+    wayPoints2D.push_back(t_point_end);
+    return wayPoints2D;
+}
 
 Line2D Rectangle::rotateVector(Line2D t_line, double t_ang)
 {
@@ -294,21 +466,386 @@ bool Rectangle::checkPointEnclosure(Vector2D<double> t_point)
     return false;
 }
 
-// TODO: write a sorting algorithm to generate a path in elegant way
-// void reorder_vec(vector<char>& vA, vector<size_t>& vOrder)  
-// {   
-//     assert(vA.size() == vOrder.size());
+std::vector<Vector2D<double>> Rectangle::generatePathSegmentFromPointAndParameter(Vector2D<double> start_point,double t){
+    std::vector<Vector2D<double>> waypoints;
+    Vector2D<double> closet_pt_on_track= this->getClosestPoint(start_point);
+    rect_sides starting_side=getIntersectingSide(closet_pt_on_track);
+    //Trivial case
+    if (abs(t-1.)<0.001){ //t=1
+        std::vector<Vector2D<double>> waypoints=this->generateClosedPathFromStartingPoint(closet_pt_on_track,rotation_direction::ccw_rot);
+        return waypoints;
+    }
+    else if (abs(t+1)<0.001){//t=-1
+        std::vector<Vector2D<double>> waypoints_added=this->generateClosedPathFromStartingPoint(closet_pt_on_track,rotation_direction::cw_rot);
+        waypoints.insert(waypoints.end(),waypoints_added.begin(),waypoints_added.end());
+        return waypoints;
+    }
+    //first we need to find the last point on path
+    double total_sides_length=this->getSide1().getLength()*2.0+this->getSide2().getLength()*2.0;
+    double parametric_path_length=total_sides_length*abs(t);
+    Vector2D<double> final_point;
+    
+    if (starting_side==rect_sides::side1){
+        if (t>0){
+            double dist_1=Vector2D<double>::getL2Norm(getSide1().getPoint2(),closet_pt_on_track);
+            if ((parametric_path_length-(dist_1))<0){
+                final_point=(getSide1().getPoint2()-closet_pt_on_track)*parametric_path_length*(dist_1/total_sides_length)+closet_pt_on_track;
+            }
+            else{
+                parametric_path_length=parametric_path_length-dist_1;
+                dist_1=Vector2D<double>::getL2Norm(getSide1().getPoint2(),getSide4().getPoint2());
+                if ((parametric_path_length-(dist_1))<0){
+                    final_point=(getSide4().getPoint2()-getSide1().getPoint2())*parametric_path_length*(dist_1/total_sides_length)+getSide1().getPoint2();
+                }
+                else 
+                {
+                    parametric_path_length=parametric_path_length-dist_1;
+                    dist_1=Vector2D<double>::getL2Norm(getSide3().getPoint1(),getSide4().getPoint2());
+                    if ((parametric_path_length-(dist_1))<0){
+                        final_point=(getSide3().getPoint1()-getSide4().getPoint2())*parametric_path_length*(dist_1/total_sides_length)+getSide4().getPoint2();
+                    }
+                    else
+                    {
+                        parametric_path_length=parametric_path_length-dist_1;
+                        dist_1=Vector2D<double>::getL2Norm(getSide3().getPoint1(),getSide2().getPoint1());
+                        if ((parametric_path_length-(dist_1))<0){
+                            final_point=(getSide2().getPoint1()-getSide3().getPoint1())*parametric_path_length*(dist_1/total_sides_length)+getSide3().getPoint1();
+                        }
+                        else{
+                            parametric_path_length=parametric_path_length-dist_1;
+                            dist_1=Vector2D<double>::getL2Norm(closet_pt_on_track,getSide2().getPoint1());
+                            if ((parametric_path_length-(dist_1))<0){
+                                final_point=(closet_pt_on_track-getSide2().getPoint1())*parametric_path_length*(dist_1/total_sides_length)+getSide2().getPoint1();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else{
+            double dist_1=Vector2D<double>::getL2Norm(getSide1().getPoint1(),closet_pt_on_track);
+            if ((parametric_path_length-(dist_1))<0){
+               final_point=(getSide1().getPoint1()-closet_pt_on_track)*parametric_path_length*(dist_1/total_sides_length)+closet_pt_on_track;
+            }
+            else{
+                parametric_path_length=parametric_path_length-dist_1;
+                dist_1=Vector2D<double>::getL2Norm(getSide2().getPoint2(),getSide1().getPoint1());
+                if ((parametric_path_length-(dist_1))<0){
+                    final_point=(getSide2().getPoint2()-getSide1().getPoint1())*parametric_path_length*(dist_1/total_sides_length)+getSide1().getPoint1();
+                }
+                else 
+                {
+                    parametric_path_length=parametric_path_length-dist_1;
+                    dist_1=Vector2D<double>::getL2Norm(getSide3().getPoint2(),getSide2().getPoint2());
+                    if ((parametric_path_length-(dist_1))<0){
+                        final_point=(getSide3().getPoint2()-getSide2().getPoint2())*parametric_path_length*(dist_1/total_sides_length)+getSide2().getPoint2();
+                    }
+                    else
+                    {
+                        parametric_path_length=parametric_path_length-dist_1;
+                        dist_1=Vector2D<double>::getL2Norm(getSide1().getPoint2(),getSide3().getPoint2());
+                        if ((parametric_path_length-(dist_1))<0){
+                            final_point=(getSide1().getPoint2()-getSide3().getPoint2())*parametric_path_length*(dist_1/total_sides_length)+getSide3().getPoint2();
+                        }
+                        else{
+                            parametric_path_length=parametric_path_length-dist_1;
+                            dist_1=Vector2D<double>::getL2Norm(closet_pt_on_track,getSide1().getPoint2());
+                            if ((parametric_path_length-(dist_1))<0){
+                                final_point=(closet_pt_on_track-getSide1().getPoint2())*parametric_path_length*(dist_1/total_sides_length)+getSide1().getPoint2();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    else if (starting_side==rect_sides::side2){
+        if (t>0){
+            double dist_1=Vector2D<double>::getL2Norm(getSide2().getPoint1(),closet_pt_on_track);
+            if ((parametric_path_length-(dist_1))<0){
+               final_point=(getSide2().getPoint1()-closet_pt_on_track)*parametric_path_length*(dist_1/total_sides_length)+closet_pt_on_track;
+            }
+            else{
+                parametric_path_length=parametric_path_length-dist_1;
+                dist_1=Vector2D<double>::getL2Norm(getSide1().getPoint2(),getSide2().getPoint1());
+                if ((parametric_path_length-(dist_1))<0){
+                    final_point=(getSide1().getPoint2()-getSide2().getPoint1())*parametric_path_length*(dist_1/total_sides_length)+getSide2().getPoint1();
+                }
+                else 
+                {
+                    parametric_path_length=parametric_path_length-dist_1;
+                    dist_1=Vector2D<double>::getL2Norm(getSide4().getPoint2(),getSide1().getPoint2());
+                    if ((parametric_path_length-(dist_1))<0){
+                        final_point=(getSide4().getPoint2()-getSide1().getPoint2())*parametric_path_length*(dist_1/total_sides_length)+getSide1().getPoint2();
+                    }
+                    else
+                    {
+                        parametric_path_length=parametric_path_length-dist_1;
+                        dist_1=Vector2D<double>::getL2Norm(getSide3().getPoint1(),getSide4().getPoint2());
+                        if ((parametric_path_length-(dist_1))<0){
+                            final_point=(getSide3().getPoint1()-getSide4().getPoint2())*parametric_path_length*(dist_1/total_sides_length)+getSide4().getPoint2();
+                        }
+                        else{
+                            parametric_path_length=parametric_path_length-dist_1;
+                            dist_1=Vector2D<double>::getL2Norm(closet_pt_on_track,getSide3().getPoint1());
+                            if ((parametric_path_length-(dist_1))<0){
+                                final_point=(closet_pt_on_track-getSide3().getPoint1())*parametric_path_length*(dist_1/total_sides_length)+getSide3().getPoint1();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else{
+            double dist_1=Vector2D<double>::getL2Norm(getSide2().getPoint2(),closet_pt_on_track);
+            if ((parametric_path_length-(dist_1))<0){
+               final_point=(getSide2().getPoint2()-closet_pt_on_track)*parametric_path_length*(dist_1/total_sides_length)+closet_pt_on_track;
+            }
+            else{
+                parametric_path_length=parametric_path_length-dist_1;
+                dist_1=Vector2D<double>::getL2Norm(getSide3().getPoint2(),getSide2().getPoint2());
+                if ((parametric_path_length-(dist_1))<0){
+                    final_point=(getSide3().getPoint2()-getSide2().getPoint2())*parametric_path_length*(dist_1/total_sides_length)+getSide2().getPoint2();
+                }
+                else 
+                {
+                    parametric_path_length=parametric_path_length-dist_1;
+                    dist_1=Vector2D<double>::getL2Norm(getSide4().getPoint1(),getSide3().getPoint2());
+                    if ((parametric_path_length-(dist_1))<0){
+                        final_point=(getSide4().getPoint1()-getSide3().getPoint2())*parametric_path_length*(dist_1/total_sides_length)+getSide3().getPoint2();
+                    }
+                    else
+                    {
+                        parametric_path_length=parametric_path_length-dist_1;
+                        dist_1=Vector2D<double>::getL2Norm(getSide1().getPoint1(),getSide4().getPoint1());
+                        if ((parametric_path_length-(dist_1))<0){
+                            final_point=(getSide1().getPoint1()-getSide4().getPoint1())*parametric_path_length*(dist_1/total_sides_length)+getSide4().getPoint1();
+                        }
+                        else{
+                            parametric_path_length=parametric_path_length-dist_1;
+                            dist_1=Vector2D<double>::getL2Norm(closet_pt_on_track,getSide1().getPoint1());
+                            if ((parametric_path_length-(dist_1))<0){
+                                final_point=(closet_pt_on_track-getSide1().getPoint1())*parametric_path_length*(dist_1/total_sides_length)+getSide1().getPoint1();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    else if (starting_side==rect_sides::side3){
+        if (t>0){
+            double dist_1=Vector2D<double>::getL2Norm(getSide3().getPoint1(),closet_pt_on_track);
+            if ((parametric_path_length-(dist_1))<0){
+               final_point=(getSide3().getPoint1()-closet_pt_on_track)*parametric_path_length*(dist_1/total_sides_length)+closet_pt_on_track;
+            }
+            else{
+                parametric_path_length=parametric_path_length-dist_1;
+                dist_1=Vector2D<double>::getL2Norm(getSide2().getPoint1(),getSide3().getPoint1());
+                if ((parametric_path_length-(dist_1))<0){
+                    final_point=(getSide2().getPoint1()-getSide3().getPoint1())*parametric_path_length*(dist_1/total_sides_length)+getSide3().getPoint1();
+                }
+                else 
+                {
+                    parametric_path_length=parametric_path_length-dist_1;
+                    dist_1=Vector2D<double>::getL2Norm(getSide1().getPoint2(),getSide2().getPoint1());
+                    if ((parametric_path_length-(dist_1))<0){
+                        final_point=(getSide1().getPoint2()-getSide2().getPoint1())*parametric_path_length*(dist_1/total_sides_length)+getSide2().getPoint1();
+                    }
+                    else
+                    {
+                        parametric_path_length=parametric_path_length-dist_1;
+                        dist_1=Vector2D<double>::getL2Norm(getSide4().getPoint2(),getSide1().getPoint2());
+                        if ((parametric_path_length-(dist_1))<0){
+                            final_point=(getSide4().getPoint2()-getSide1().getPoint2())*parametric_path_length*(dist_1/total_sides_length)+getSide1().getPoint2();
+                        }
+                        else{
+                            parametric_path_length=parametric_path_length-dist_1;
+                            dist_1=Vector2D<double>::getL2Norm(closet_pt_on_track,getSide4().getPoint2());
+                            if ((parametric_path_length-(dist_1))<0){
+                                final_point=(closet_pt_on_track-getSide4().getPoint2())*parametric_path_length*(dist_1/total_sides_length)+getSide4().getPoint2();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else{
+            double dist_1=Vector2D<double>::getL2Norm(getSide3().getPoint2(),closet_pt_on_track);
+            if ((parametric_path_length-(dist_1))<0){
+               final_point=(getSide3().getPoint2()-closet_pt_on_track)*parametric_path_length*(dist_1/total_sides_length)+closet_pt_on_track;
+            }
+            else{
+                parametric_path_length=parametric_path_length-dist_1;
+                dist_1=Vector2D<double>::getL2Norm(getSide4().getPoint1(),getSide3().getPoint2());
+                if ((parametric_path_length-(dist_1))<0){
+                    final_point=(getSide4().getPoint1()-getSide3().getPoint2())*parametric_path_length*(dist_1/total_sides_length)+getSide3().getPoint2();
+                }
+                else 
+                {
+                    parametric_path_length=parametric_path_length-dist_1;
+                    dist_1=Vector2D<double>::getL2Norm(getSide1().getPoint1(),getSide4().getPoint1());
+                    if ((parametric_path_length-(dist_1))<0){
+                        final_point=(getSide1().getPoint1()-getSide4().getPoint1())*parametric_path_length*(dist_1/total_sides_length)+getSide4().getPoint1();
+                    }
+                    else
+                    {
+                        parametric_path_length=parametric_path_length-dist_1;
+                        dist_1=Vector2D<double>::getL2Norm(getSide3().getPoint1(),getSide1().getPoint1());
+                        if ((parametric_path_length-(dist_1))<0){
+                            final_point=(getSide3().getPoint1()-getSide1().getPoint1())*parametric_path_length*(dist_1/total_sides_length)+getSide1().getPoint1();
+                        }
+                        else{
+                            parametric_path_length=parametric_path_length-dist_1;
+                            dist_1=Vector2D<double>::getL2Norm(closet_pt_on_track,getSide3().getPoint1());
+                            if ((parametric_path_length-(dist_1))<0){
+                                final_point=(closet_pt_on_track-getSide3().getPoint1())*parametric_path_length*(dist_1/total_sides_length)+getSide3().getPoint1();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    else if (starting_side==rect_sides::side4){
+        if (t>0){
+            double dist_1=Vector2D<double>::getL2Norm(getSide4().getPoint2(),closet_pt_on_track);
+            if ((parametric_path_length-(dist_1))<0){
+               final_point=(getSide4().getPoint2()-closet_pt_on_track)*parametric_path_length*(dist_1/total_sides_length)+closet_pt_on_track;
+            }
+            else{
+                parametric_path_length=parametric_path_length-dist_1;
+                dist_1=Vector2D<double>::getL2Norm(getSide3().getPoint1(),getSide4().getPoint2());
+                if ((parametric_path_length-(dist_1))<0){
+                    final_point=(getSide3().getPoint1()-getSide4().getPoint2())*parametric_path_length*(dist_1/total_sides_length)+getSide4().getPoint2();
+                }
+                else 
+                {
+                    parametric_path_length=parametric_path_length-dist_1;
+                    dist_1=Vector2D<double>::getL2Norm(getSide2().getPoint1(),getSide3().getPoint1());
+                    if ((parametric_path_length-(dist_1))<0){
+                        final_point=(getSide2().getPoint1()-getSide3().getPoint1())*parametric_path_length*(dist_1/total_sides_length)+getSide3().getPoint1();
+                    }
+                    else
+                    {
+                        parametric_path_length=parametric_path_length-dist_1;
+                        dist_1=Vector2D<double>::getL2Norm(getSide1().getPoint2(),getSide2().getPoint1());
+                        if ((parametric_path_length-(dist_1))<0){
+                            final_point=(getSide1().getPoint2()-getSide2().getPoint1())*parametric_path_length*(dist_1/total_sides_length)+getSide2().getPoint1();
+                        }
+                        else{
+                            parametric_path_length=parametric_path_length-dist_1;
+                            dist_1=Vector2D<double>::getL2Norm(closet_pt_on_track,getSide1().getPoint2());
+                            if ((parametric_path_length-(dist_1))<0){
+                                final_point=(closet_pt_on_track-getSide1().getPoint2())*parametric_path_length*(dist_1/total_sides_length)+getSide1().getPoint2();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else{
+            double dist_1=Vector2D<double>::getL2Norm(getSide4().getPoint1(),closet_pt_on_track);
+            if ((parametric_path_length-(dist_1))<0){
+               final_point=(getSide4().getPoint1()-closet_pt_on_track)*parametric_path_length*(dist_1/total_sides_length)+closet_pt_on_track;
+            }
+            else{
+                parametric_path_length=parametric_path_length-dist_1;
+                dist_1=Vector2D<double>::getL2Norm(getSide1().getPoint1(),getSide4().getPoint1());
+                if ((parametric_path_length-(dist_1))<0){
+                    final_point=(getSide1().getPoint1()-getSide4().getPoint1())*parametric_path_length*(dist_1/total_sides_length)+getSide4().getPoint1();
+                }
+                else 
+                {
+                    parametric_path_length=parametric_path_length-dist_1;
+                    dist_1=Vector2D<double>::getL2Norm(getSide2().getPoint2(),getSide1().getPoint1());
+                    if ((parametric_path_length-(dist_1))<0){
+                        final_point=(getSide2().getPoint2()-getSide1().getPoint1())*parametric_path_length*(dist_1/total_sides_length)+getSide1().getPoint1();
+                    }
+                    else
+                    {
+                        parametric_path_length=parametric_path_length-dist_1;
+                        dist_1=Vector2D<double>::getL2Norm(getSide3().getPoint2(),getSide2().getPoint2());
+                        if ((parametric_path_length-(dist_1))<0){
+                            final_point=(getSide3().getPoint2()-getSide2().getPoint2())*parametric_path_length*(dist_1/total_sides_length)+getSide2().getPoint2();
+                        }
+                        else{
+                            parametric_path_length=parametric_path_length-dist_1;
+                            dist_1=Vector2D<double>::getL2Norm(closet_pt_on_track,getSide3().getPoint2());
+                            if ((parametric_path_length-(dist_1))<0){
+                                final_point=(closet_pt_on_track-getSide3().getPoint2())*parametric_path_length*(dist_1/total_sides_length)+getSide3().getPoint2();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
-//     // for all elements to put in place
-//     for( int i = 0; i < va.size() - 1; ++i )
-//     { 
-//         // while the element i is not yet in place 
-//         while( i != vOrder[i] )
-//         {
-//             // swap it with the element at its final place
-//             int alt = vOrder[i];
-//             swap( vA[i], vA[alt] );
-//             swap( vOrder[i], vOrder[alt] );
-//         }
-//     }
-// }
+    std::vector<Vector2D<double>> waypoints_added;
+    if (t>0){
+        waypoints_added=this->generatePathSegmentFromTwoPoint(closet_pt_on_track,final_point,rotation_direction::ccw_rot);
+    }
+    else{
+        waypoints_added=this->generatePathSegmentFromTwoPoint(closet_pt_on_track,final_point,rotation_direction::cw_rot);
+    }
+    waypoints.insert(waypoints.end(),waypoints_added.begin(),waypoints_added.end());
+
+    return waypoints;
+}
+
+rect_sides Rectangle::getIntersectingSide(Vector2D<double> input_pt){
+    //Workout all sides
+    Line2D side3=side1;
+    side3.translateBy(side2.getPoint2()-side2.getPoint1());
+    Line2D side4=side2;
+    side4.translateBy(side1.getPoint2()-side1.getPoint1());
+    if (side1.checkPointIntesection(input_pt)){ //TODO refactor
+        return rect_sides::side1;
+    }
+    if (side2.checkPointIntesection(input_pt)){
+        return rect_sides::side2;
+    }
+    if (side3.checkPointIntesection(input_pt)){
+        return rect_sides::side3;
+    }
+    if (side4.checkPointIntesection(input_pt)){
+        return rect_sides::side4;
+    }
+    return rect_sides::side1;//TODO Handle
+}
+
+rect_sides Rectangle::getNextSide(rect_sides curr_side,rotation_direction rot_dir){
+    if (curr_side==rect_sides::side1){
+        if (rot_dir==rotation_direction::cw_rot){
+            return rect_sides::side4;
+        }
+        else{
+            return rect_sides::side2;
+        }
+    }
+    if (curr_side==rect_sides::side2){
+        if (rot_dir==rotation_direction::cw_rot){
+            return rect_sides::side1;
+        }
+        else{
+            return rect_sides::side3;
+        }
+    }
+    if (curr_side==rect_sides::side3){
+        if (rot_dir==rotation_direction::cw_rot){
+            return rect_sides::side2;
+        }
+        else{
+            return rect_sides::side4;
+        }
+    }
+    if (curr_side==rect_sides::side4){
+        if (rot_dir==rotation_direction::cw_rot){
+            return rect_sides::side3;
+        }
+        else{
+            return rect_sides::side1;
+        }
+    }
+}

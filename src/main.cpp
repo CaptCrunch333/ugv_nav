@@ -11,6 +11,8 @@
 #include "looper.hpp"
 #include <vector>
 
+#undef debug_PathGenerator
+
 int main(int argc, char **argv){
     ros::init(argc, argv, "ugv_nav");
     ros::NodeHandle nh;
@@ -25,6 +27,58 @@ int main(int argc, char **argv){
     Map2D* mainMap = new Map2D();
     //Vector2D<double> mapOrigin({0,0});
     //mainMap->MoveMap(mapOrigin);
+
+    // ********************************************************************************
+    // ********************************** Path Track **********************************
+    // ********************************************************************************
+    #ifdef debug_PathGenerator
+    PathGenerator2D sample_gen;
+    Rectangle track;
+    Line2D side1,side2;
+    Vector2D<double> side1_pt1,side1_pt2,side2_pt2,curr_pos;
+    side1_pt1.x=1;
+    side1_pt1.y=1;
+    side1_pt2.x=5;
+    side1_pt2.y=1;
+    side2_pt2.x=1;
+    side2_pt2.y=5;
+    side1.setPoint1(side1_pt1);
+    side1.setPoint2(side1_pt2);
+    side2.setPoint1(side1_pt1);
+    side2.setPoint2(side2_pt2);
+    track.updateRectangleSides(side1,side2);
+    sample_gen.setTrack(track);
+    curr_pos.x=3;
+    curr_pos.y=6;
+    std::vector<Vector3D<double>> res_path;
+    res_path=sample_gen.generateParametricPath(curr_pos,0.25);
+    print_utility::print_vec_3d(res_path);
+    Logger::getAssignedLogger()->log("gen2", LoggerLevel::Info);
+    res_path=sample_gen.generateParametricPath(curr_pos,0.5);
+    print_utility::print_vec_3d(res_path);
+    Logger::getAssignedLogger()->log("gen3", LoggerLevel::Info);
+
+    res_path=sample_gen.generateParametricPath(curr_pos,0.75);
+    print_utility::print_vec_3d(res_path);
+    Logger::getAssignedLogger()->log("gen4", LoggerLevel::Info);
+
+    res_path=sample_gen.generateParametricPath(curr_pos,1);
+    print_utility::print_vec_3d(res_path);
+    Logger::getAssignedLogger()->log("gen5", LoggerLevel::Info);
+
+    res_path=sample_gen.generateParametricPath(curr_pos,-0.25);
+    print_utility::print_vec_3d(res_path);
+    Logger::getAssignedLogger()->log("gen6", LoggerLevel::Info);
+
+    res_path=sample_gen.generateParametricPath(curr_pos,-0.5);
+    print_utility::print_vec_3d(res_path);
+
+    res_path=sample_gen.generateParametricPath(curr_pos,-0.75);
+    print_utility::print_vec_3d(res_path);
+
+    res_path=sample_gen.generateParametricPath(curr_pos,-1);
+    print_utility::print_vec_3d(res_path);
+    #endif
     // ********************************************************************************
     // ******************************** UGV NAVIGATOR *********************************
     WheeledRobot* mainUGV = new WheeledRobot;
