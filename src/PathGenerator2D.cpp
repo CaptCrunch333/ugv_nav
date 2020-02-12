@@ -3,6 +3,11 @@
 void PathGenerator2D::setTrack(Rectangle t_in_building_track){
     in_building_track=t_in_building_track;
 }
+
+double PathGenerator2D::getTrackLength() {
+    return 2*(in_building_track.getSide1().getLength() + in_building_track.getSide2().getLength());
+}
+
 //gets the next pose 
 std::vector<Vector3D<double>> PathGenerator2D::generateParametricPath(Vector2D<double> initial_position, double parameter){
     clearPath();

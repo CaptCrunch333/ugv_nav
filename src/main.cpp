@@ -1,13 +1,12 @@
 #include "ROSUnit_Factory.hpp"
-#include "ROSUnit_UGVMoveBase.hpp"
 #include "ROSUnit_AMCLPose.hpp"
+#include "ROSUnitActClnt_BaseStatus.hpp"
+#include "ROSUnitActClnt_MoveBase.hpp"
+#include "ROSUnitActClnt_StopBase.hpp"
 #include "QuatToEuler.hpp"
 #include "EulerToQuat.hpp"
 #include "std_logger.hpp"
 #include "UGVNavigator.hpp"
-#include "ROSUnitActClnt_BaseStatus.hpp"
-#include "ROSUnitActClnt_MoveBase.hpp"
-#include "ROSUnitActClnt_StopBase.hpp"
 #include "looper.hpp"
 #include <vector>
 
@@ -25,9 +24,6 @@ int main(int argc, char **argv){
     // *********************************** FIRE MAP ***********************************
     //TODO: add function to take map vertices as a txt
     Map2D* mainMap = new Map2D();
-    //Vector2D<double> mapOrigin({0,0});
-    //mainMap->MoveMap(mapOrigin);
-
     // ********************************************************************************
     // ********************************** Path Track **********************************
     // ********************************************************************************
@@ -90,24 +86,21 @@ int main(int argc, char **argv){
     float EntranceHeading = 0;
     mainUGVNavigator->setEntranceLocation(EntraceLocation, EntranceHeading);
     mainUGVNavigator->setMap(mainMap);
-    std::vector<Vector2D<float>> mainScanPath;
-    mainScanPath.push_back(Vector2D<float>({8, 3}));
-    mainScanPath.push_back(Vector2D<float>({9, 3}));
-    mainScanPath.push_back(Vector2D<float>({10, 3}));
-    mainScanPath.push_back(Vector2D<float>({11, 3}));
-    mainScanPath.push_back(Vector2D<float>({11, 4}));
-    mainScanPath.push_back(Vector2D<float>({11, 5}));
-    mainScanPath.push_back(Vector2D<float>({11, 6}));
-    mainScanPath.push_back(Vector2D<float>({11, 7}));
-    mainScanPath.push_back(Vector2D<float>({10, 7}));
-    mainScanPath.push_back(Vector2D<float>({9, 7}));
-    mainScanPath.push_back(Vector2D<float>({8, 7}));
-    mainScanPath.push_back(Vector2D<float>({8, 6}));
-    mainScanPath.push_back(Vector2D<float>({8, 5}));
-    mainScanPath.push_back(Vector2D<float>({8, 4}));
-    mainUGVNavigator->setScanningPath(mainScanPath);
-    mainUGVNavigator->setSearchTimeOut(1000000000);
-    mainUGVNavigator->setReachingGoalPositionTimeOut(1000000000);
+    Rectangle* track = new Rectangle;
+    Line2D side1,side2;
+    Vector2D<double> side1_pt1,side1_pt2,side2_pt2;
+    side1_pt1.x=1;
+    side1_pt1.y=1;
+    side1_pt2.x=5;
+    side1_pt2.y=1;
+    side2_pt2.x=1;
+    side2_pt2.y=5;
+    side1.setPoint1(side1_pt1);
+    side1.setPoint2(side1_pt2);
+    side2.setPoint1(side1_pt1);
+    side2.setPoint2(side2_pt2);
+    track->updateRectangleSides(side1,side2);
+    mainUGVNavigator->setScanningPath(track);
     // ********************************************************************************
     // ********************************** ROS UNITS  **********************************
     //ROSFactory Units
@@ -176,5 +169,3 @@ int main(int argc, char **argv){
     }
     return 0;
 }
-
-//TODO: add time out functionallity

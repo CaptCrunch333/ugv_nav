@@ -15,12 +15,12 @@ class WheeledRobot : public msg_receiver, public msg_emitter
 {
     public:
         WheeledRobot();
-        void setGoal(std::vector<Vector3D<float>>);
-        void setGoal(Vector3D<float>);
-        Vector2D<float> getGoalPosition(); //TODO: this gives the last goal position, to be split into last and current
-        float getGoalHeading();
-        Vector2D<float> getCurrentPosition();
-        float getCurrentHeading();
+        void setGoal(std::vector<Vector3D<double>>);
+        void setGoal(Vector3D<double>);
+        Vector2D<double> getGoalPosition(); //TODO: this gives the last goal position, to be split into last and current
+        double getGoalHeading();
+        Vector2D<double> getCurrentPosition();
+        double getCurrentHeading();
         void move();
         void stop();
         bool reachedPosition();
@@ -28,11 +28,11 @@ class WheeledRobot : public msg_receiver, public msg_emitter
         void receive_msg_data(DataMessage*, int);
 
     private:
-        Vector2D<float> m_CurrentPosition;
-        std::vector<Vector3D<float>> m_GoalPose;
+        Vector2D<double> m_CurrentPosition;
+        std::vector<Vector3D<double>> m_GoalPose;
         actionlib_msgs::GoalStatus m_status;
-        std::vector<Vector3D<float>> m_queue;
-        float m_CurrentHeading;
+        std::vector<Vector3D<double>> m_queue;
+        double m_CurrentHeading;
 
         bool clearQueue();
 };

@@ -5,8 +5,6 @@ Vector2DMsg ROSUnit_AMCLPose::_position_msg;
 QuaternionMessage ROSUnit_AMCLPose::_quat_msg;
 
 ROSUnit_AMCLPose::ROSUnit_AMCLPose(ros::NodeHandle& t_main_handler) : ROSUnit(t_main_handler){
-
-    //TODO: check topic names
     _sub_pose = t_main_handler.subscribe("/amcl_pose", 1, callbackPose);
     _instance_ptr = this;
 }

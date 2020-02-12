@@ -7,6 +7,7 @@ UGVNavigator::UGVNavigator(WheeledRobot* t_robot, block_frequency t_bf) : TimedB
 void UGVNavigator::loopInternal() {
     switch (mainUGVNavMissionStateManager.getMissionState()) {
         case UGVNavState::WARMINGUP: {
+            //TODO: add idle check
             mainUGVNavMissionStateManager.updateMissionState(UGVNavState::IDLE);
         }
             break;
@@ -16,25 +17,13 @@ void UGVNavigator::loopInternal() {
             }
         }
             break;
-        case UGVNavState::SEARCHINGFORFIRE: {
-            if(m_PatrolState != UGVPatrolState::IDLE) {
-                if(m_robot->reachedPosition()) {
-                    //Vector3D<float> tmp = m_PathGenerator.getNextPose(m_FireDirection); //TODO: Adopt Chehadeh Changes
-                    // Vector3D<float> tmp = m_PathGenerator.getNextPose();
-                    // m_robot->setGoal(tmp);
-                    // m_robot->move();
-                    // m_Timer.tick();
-                }
-                else if(m_Timer.tockMilliSeconds() > m_ReachingGoalPositionTimeOut) {
-                    Logger::getAssignedLogger()->log("UGV Failed to Reach Search Goal Position, Moving To The Next Point", LoggerLevel::Warning);
-                    //Vector3D<float> tmp = m_PathGenerator.getNextPose(m_FireDirection); //TODO: Adopt Chehadeh Changes
-                    //Vector3D<float> tmp = m_PathGenerator.getNextPose();
-                    m_robot->setGoal(tmp);
-                    m_robot->move();
-                    m_Timer.tick();
-                }
-            }
-        }
+        // case UGVNavState::SEARCHINGFORFIRE: {
+        //     if(m_PatrolState != UGVPatrolState::IDLE) {
+        //         if(m_robot->reachedPosition()) {
+        //             m_robot->move();
+        //         }
+        //     }
+        // }
             break;
         case UGVNavState::HEADINGTOWARDSFIRE: {
             if(m_robot->reachedPosition()) {
@@ -64,13 +53,13 @@ void UGVNavigator::receive_msg_data(DataMessage* t_msg, int t_channel_id) {
             else {
                 switch ((UGVNavState)((IntegerMsg*)t_msg)->data) {
                 case UGVNavState::IDLE: {
-                    //TODO: add a function to kill the ugv movement and reset states
+                    this->reset();
                     mainUGVNavMissionStateManager.updateMissionState(UGVNavState::IDLE);
                     Logger::getAssignedLogger()->log("MM Changed UGV Nav State To IDLE", LoggerLevel::Info);
                     break; }
 
                 case UGVNavState::UTILITY: {
-                    //TODO: add a function to kill the ugv movement
+                    m_robot->stop();
                     mainUGVNavMissionStateManager.updateMissionState(UGVNavState::UTILITY);
                     Logger::getAssignedLogger()->log("MM Changed UGV Nav State To Utility", LoggerLevel::Warning);
                     break; }
@@ -83,8 +72,7 @@ void UGVNavigator::receive_msg_data(DataMessage* t_msg, int t_channel_id) {
                     break; }
 
                  case UGVNavState::HEADINGTOWARDSFIRE: {
-                    // m_robot->setGoalPosition(m_ExtLocation);
-                    // m_robot->setGoalHeading(m_ExtHeading);
+                    m_robot->setGoal({m_ExtLocation.x, m_ExtLocation.y, m_ExtHeading});
                     m_robot->move();
                     mainUGVNavMissionStateManager.updateMissionState(UGVNavState::HEADINGTOWARDSFIRE);
                     Logger::getAssignedLogger()->log("MM Changed UGV Nav State To Heading Towards Fire", LoggerLevel::Info);
@@ -96,8 +84,7 @@ void UGVNavigator::receive_msg_data(DataMessage* t_msg, int t_channel_id) {
                     break; }    
 
                 case UGVNavState::RETURNINGTOBASE: {
-                    // m_robot->setGoalPosition(m_HomePosition);
-                    // m_robot->setGoalHeading(m_HomeHeading);
+                    m_robot->setGoal({m_HomePosition.x, m_HomePosition.y, m_HomeHeading});
                     m_robot->move();
                     mainUGVNavMissionStateManager.updateMissionState(UGVNavState::RETURNINGTOBASE);
                     Logger::getAssignedLogger()->log("MM Changed UGV Nav State To Returning To Base", LoggerLevel::Info);
@@ -134,10 +121,17 @@ void UGVNavigator::receive_msg_data(DataMessage* t_msg, int t_channel_id) {
             IntegerMsg* t_patrol_msg = (IntegerMsg*)t_msg;
             if(t_patrol_msg->data == (int) UGVPatrolState::HEADINGTOWARDSFIREDIRECTION) {
                 m_PatrolState = UGVPatrolState::HEADINGTOWARDSFIREDIRECTION;
-                //Vector3D<float> tmp = m_PathGenerator.getNextPose(m_FireDirection); //TODO: Adopt Chehadeh Changes
-                Vector3D<float> tmp = m_PathGenerator.getNextPose();
-                // m_robot->setGoalPosition(tmp.project_xy());
-                // m_robot->setGoalHeading(tmp.z);
+                m_robot->setGoal(m_PathGenerator.generateParametricPath(m_FireDirection.getPoint2(), 0));
+                m_robot->move();
+            }
+            else if(t_patrol_msg->data == (int) UGVPatrolState::PATROLINGCCW) {
+                m_PatrolState = UGVPatrolState::PATROLINGCCW;
+                m_robot->setGoal(m_PathGenerator.generateParametricPath(m_robot->getCurrentPosition(), 1));
+                m_robot->move();
+            }
+            else if(t_patrol_msg->data == (int) UGVPatrolState::PATROLINGCW) {
+                m_PatrolState = UGVPatrolState::PATROLINGCW;
+                m_robot->setGoal(m_PathGenerator.generateParametricPath(m_robot->getCurrentPosition(), -1));
                 m_robot->move();
             }
         }
@@ -146,6 +140,9 @@ void UGVNavigator::receive_msg_data(DataMessage* t_msg, int t_channel_id) {
         if(t_msg->getType() == msg_type::FLOAT) {
             FloatMsg* t_float_msg = (FloatMsg*) t_msg;
             Logger::getAssignedLogger()->log("Adjustment Command Received: %f", t_float_msg->data, LoggerLevel::Info);
+            double t_step_size = double(t_float_msg->data) / m_PathGenerator.getTrackLength();
+            m_robot->setGoal(m_PathGenerator.generateParametricPath(m_robot->getCurrentPosition(), t_step_size));
+            m_robot->move();
         }
     }
 }
@@ -160,20 +157,15 @@ void UGVNavigator::setEntranceLocation(Vector2D<double> t_pos, float t_heading) 
     m_EntranceHeading = t_heading;
 }
 
-void UGVNavigator::setScanningPath(std::vector<Vector2D<float>> t_pos) {
-    //TODO: Adopt Chehadeh Changes
-    Rectangle anything;
-    m_PathGenerator.setTrack(anything);
+void UGVNavigator::setScanningPath(Rectangle* t_rect) {
+    m_PathGenerator.setTrack(*t_rect);
 }
 
 void UGVNavigator::setMap(Map2D* t_map) {
     m_Map = t_map;
 }
 
-void UGVNavigator::setSearchTimeOut(int t_val) {
-    m_SearchTimeOut = t_val;
-}
-
-void UGVNavigator::setReachingGoalPositionTimeOut(int t_val) {
-    m_ReachingGoalPositionTimeOut = t_val;
+void UGVNavigator::reset() {
+    m_PatrolState = UGVPatrolState::IDLE;
+    m_robot->stop();
 }
