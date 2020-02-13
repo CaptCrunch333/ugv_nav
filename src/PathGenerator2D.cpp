@@ -11,6 +11,7 @@ double PathGenerator2D::getTrackLength() {
 //gets the next pose 
 std::vector<Vector3D<double>> PathGenerator2D::generateParametricPath(Vector2D<double> initial_position, double parameter){
     clearPath();
+    //Logger::getAssignedLogger()->log("init position is: %f , %f and step is: %f", initial_position.x, initial_position.y, parameter, LoggerLevel::Warning);
     std::vector<Vector2D<double>> waypoints=in_building_track.generatePathSegmentFromPointAndParameter(initial_position,parameter);
     waypoints_with_heading=add_heading_for_waypoints(waypoints);
     return waypoints_with_heading;

@@ -1,4 +1,5 @@
 #include "WheeledRobot.hpp"
+#include "print_utility.hpp"
 
 WheeledRobot::WheeledRobot() {
     m_status.status = actionlib_msgs::GoalStatus::ACTIVE;
@@ -7,11 +8,15 @@ WheeledRobot::WheeledRobot() {
 void WheeledRobot::setGoal(std::vector<Vector3D<double>> t_goal) {
     m_GoalPose.clear();
     m_GoalPose = t_goal;
+    Logger::getAssignedLogger()->log("received a new goal!", LoggerLevel::Info);
+    print_utility::print_vec_3d(m_GoalPose);
 }
 
 void WheeledRobot::setGoal(Vector3D<double> t_goal) {
     m_GoalPose.clear();
     m_GoalPose.push_back(t_goal);
+    Logger::getAssignedLogger()->log("received a new goal!", LoggerLevel::Info);
+    print_utility::print_vec_3d(m_GoalPose);
 }
 
 Vector2D<double> WheeledRobot::getGoalPosition() {
@@ -32,6 +37,7 @@ double WheeledRobot::getCurrentHeading() {
 
 void WheeledRobot::move() {
     m_queue = m_GoalPose;
+    m_GoalPose.clear();
     this->clearQueue();
 }
 

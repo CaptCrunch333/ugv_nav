@@ -470,51 +470,56 @@ std::vector<Vector2D<double>> Rectangle::generatePathSegmentFromPointAndParamete
     std::vector<Vector2D<double>> waypoints;
     Vector2D<double> closet_pt_on_track= this->getClosestPoint(start_point);
     rect_sides starting_side=getIntersectingSide(closet_pt_on_track);
+    //Logger::getAssignedLogger()->log("Hello Jeorge",LoggerLevel::Info);
     //Trivial case
-    if (abs(t-1.)<0.001){ //t=1
+    if (fabs(t-1.0)<0.001){ //t=1
         std::vector<Vector2D<double>> waypoints=this->generateClosedPathFromStartingPoint(closet_pt_on_track,rotation_direction::ccw_rot);
+        //Logger::getAssignedLogger()->log("t =1: %f",fabs(t-1.0),LoggerLevel::Info);
         return waypoints;
     }
-    else if (abs(t+1)<0.001){//t=-1
+    else if (fabs(t+1.0)<0.001){//t=-1
         std::vector<Vector2D<double>> waypoints_added=this->generateClosedPathFromStartingPoint(closet_pt_on_track,rotation_direction::cw_rot);
         waypoints.insert(waypoints.end(),waypoints_added.begin(),waypoints_added.end());
         return waypoints;
     }
     //first we need to find the last point on path
     double total_sides_length=this->getSide1().getLength()*2.0+this->getSide2().getLength()*2.0;
-    double parametric_path_length=total_sides_length*abs(t);
+    double parametric_path_length=total_sides_length*fabs(t);
     Vector2D<double> final_point;
-    
+    //Logger::getAssignedLogger()->log("starting side: %f",(float)starting_side,LoggerLevel::Info);
+    //Logger::getAssignedLogger()->log("t: %f",t,LoggerLevel::Info);
+    //Logger::getAssignedLogger()->log("parametric_path_length: %f",parametric_path_length,LoggerLevel::Info);
+    //Logger::getAssignedLogger()->log("total_sides_length: %f",total_sides_length,LoggerLevel::Info);
     if (starting_side==rect_sides::side1){
-        if (t>0){
+        if (t>0.0){
             double dist_1=Vector2D<double>::getL2Norm(getSide1().getPoint2(),closet_pt_on_track);
-            if ((parametric_path_length-(dist_1))<0){
+            if ((parametric_path_length-(dist_1))<0.0){
                 final_point=(getSide1().getPoint2()-closet_pt_on_track)*parametric_path_length*(dist_1/total_sides_length)+closet_pt_on_track;
             }
             else{
                 parametric_path_length=parametric_path_length-dist_1;
                 dist_1=Vector2D<double>::getL2Norm(getSide1().getPoint2(),getSide4().getPoint2());
-                if ((parametric_path_length-(dist_1))<0){
+                if ((parametric_path_length-(dist_1))<0.0){
                     final_point=(getSide4().getPoint2()-getSide1().getPoint2())*parametric_path_length*(dist_1/total_sides_length)+getSide1().getPoint2();
                 }
                 else 
                 {
                     parametric_path_length=parametric_path_length-dist_1;
                     dist_1=Vector2D<double>::getL2Norm(getSide3().getPoint1(),getSide4().getPoint2());
-                    if ((parametric_path_length-(dist_1))<0){
+                    if ((parametric_path_length-(dist_1))<0.0){
                         final_point=(getSide3().getPoint1()-getSide4().getPoint2())*parametric_path_length*(dist_1/total_sides_length)+getSide4().getPoint2();
                     }
                     else
                     {
                         parametric_path_length=parametric_path_length-dist_1;
                         dist_1=Vector2D<double>::getL2Norm(getSide3().getPoint1(),getSide2().getPoint1());
-                        if ((parametric_path_length-(dist_1))<0){
+                        if ((parametric_path_length-(dist_1))<0.0){
                             final_point=(getSide2().getPoint1()-getSide3().getPoint1())*parametric_path_length*(dist_1/total_sides_length)+getSide3().getPoint1();
                         }
                         else{
                             parametric_path_length=parametric_path_length-dist_1;
                             dist_1=Vector2D<double>::getL2Norm(closet_pt_on_track,getSide2().getPoint1());
-                            if ((parametric_path_length-(dist_1))<0){
+                            if ((parametric_path_length-(dist_1))<0.0){
                                 final_point=(closet_pt_on_track-getSide2().getPoint1())*parametric_path_length*(dist_1/total_sides_length)+getSide2().getPoint1();
                             }
                         }
@@ -561,21 +566,26 @@ std::vector<Vector2D<double>> Rectangle::generatePathSegmentFromPointAndParamete
     }
     else if (starting_side==rect_sides::side2){
         if (t>0){
+            //Logger::getAssignedLogger()->log("starting side: %f",(float)starting_side,LoggerLevel::Info);
+            //Logger::getAssignedLogger()->log("t: %f",t,LoggerLevel::Info);
             double dist_1=Vector2D<double>::getL2Norm(getSide2().getPoint1(),closet_pt_on_track);
             if ((parametric_path_length-(dist_1))<0){
                final_point=(getSide2().getPoint1()-closet_pt_on_track)*parametric_path_length*(dist_1/total_sides_length)+closet_pt_on_track;
+                //Logger::getAssignedLogger()->log("Case 1",LoggerLevel::Info);
             }
             else{
                 parametric_path_length=parametric_path_length-dist_1;
                 dist_1=Vector2D<double>::getL2Norm(getSide1().getPoint2(),getSide2().getPoint1());
                 if ((parametric_path_length-(dist_1))<0){
                     final_point=(getSide1().getPoint2()-getSide2().getPoint1())*parametric_path_length*(dist_1/total_sides_length)+getSide2().getPoint1();
+                    //Logger::getAssignedLogger()->log("Case 2",LoggerLevel::Info);
                 }
                 else 
                 {
                     parametric_path_length=parametric_path_length-dist_1;
                     dist_1=Vector2D<double>::getL2Norm(getSide4().getPoint2(),getSide1().getPoint2());
                     if ((parametric_path_length-(dist_1))<0){
+                        //Logger::getAssignedLogger()->log("Case 3",LoggerLevel::Info);
                         final_point=(getSide4().getPoint2()-getSide1().getPoint2())*parametric_path_length*(dist_1/total_sides_length)+getSide1().getPoint2();
                     }
                     else
@@ -583,12 +593,14 @@ std::vector<Vector2D<double>> Rectangle::generatePathSegmentFromPointAndParamete
                         parametric_path_length=parametric_path_length-dist_1;
                         dist_1=Vector2D<double>::getL2Norm(getSide3().getPoint1(),getSide4().getPoint2());
                         if ((parametric_path_length-(dist_1))<0){
+                            //Logger::getAssignedLogger()->log("Case 4",LoggerLevel::Info);
                             final_point=(getSide3().getPoint1()-getSide4().getPoint2())*parametric_path_length*(dist_1/total_sides_length)+getSide4().getPoint2();
                         }
                         else{
                             parametric_path_length=parametric_path_length-dist_1;
                             dist_1=Vector2D<double>::getL2Norm(closet_pt_on_track,getSide3().getPoint1());
                             if ((parametric_path_length-(dist_1))<0){
+                                //Logger::getAssignedLogger()->log("Case 5",LoggerLevel::Info);
                                 final_point=(closet_pt_on_track-getSide3().getPoint1())*parametric_path_length*(dist_1/total_sides_length)+getSide3().getPoint1();
                             }
                         }

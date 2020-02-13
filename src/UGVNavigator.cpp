@@ -136,11 +136,11 @@ void UGVNavigator::receive_msg_data(DataMessage* t_msg, int t_channel_id) {
             }
         }
     }
-    else if(t_channel_id == (int)CHANNELS::POSITION_ADJUSTMENT) {
+    else if(t_channel_id == (int)CHANNELS::POSITION_ADJUSTMENT) { //TODO: check functionality
         if(t_msg->getType() == msg_type::FLOAT) {
             FloatMsg* t_float_msg = (FloatMsg*) t_msg;
             Logger::getAssignedLogger()->log("Adjustment Command Received: %f", t_float_msg->data, LoggerLevel::Info);
-            double t_step_size = double(t_float_msg->data) / m_PathGenerator.getTrackLength();
+            double t_step_size = double(t_float_msg->data);
             m_robot->setGoal(m_PathGenerator.generateParametricPath(m_robot->getCurrentPosition(), t_step_size));
             m_robot->move();
         }

@@ -23,58 +23,32 @@ int main(int argc, char **argv){
     // ********************************************************************************
     // *********************************** FIRE MAP ***********************************
     //TODO: add function to take map vertices as a txt
-    Map2D* mainMap = new Map2D();
-    // ********************************************************************************
-    // ********************************** Path Track **********************************
-    // ********************************************************************************
-    #ifdef debug_PathGenerator
-    PathGenerator2D sample_gen;
-    Rectangle track;
-    Line2D side1,side2;
-    Vector2D<double> side1_pt1,side1_pt2,side2_pt2,curr_pos;
-    side1_pt1.x=1;
-    side1_pt1.y=1;
-    side1_pt2.x=5;
-    side1_pt2.y=1;
-    side2_pt2.x=1;
-    side2_pt2.y=5;
-    side1.setPoint1(side1_pt1);
-    side1.setPoint2(side1_pt2);
-    side2.setPoint1(side1_pt1);
-    side2.setPoint2(side2_pt2);
-    track.updateRectangleSides(side1,side2);
-    sample_gen.setTrack(track);
-    curr_pos.x=3;
-    curr_pos.y=6;
-    std::vector<Vector3D<double>> res_path;
-    res_path=sample_gen.generateParametricPath(curr_pos,0.25);
-    print_utility::print_vec_3d(res_path);
-    Logger::getAssignedLogger()->log("gen2", LoggerLevel::Info);
-    res_path=sample_gen.generateParametricPath(curr_pos,0.5);
-    print_utility::print_vec_3d(res_path);
-    Logger::getAssignedLogger()->log("gen3", LoggerLevel::Info);
-
-    res_path=sample_gen.generateParametricPath(curr_pos,0.75);
-    print_utility::print_vec_3d(res_path);
-    Logger::getAssignedLogger()->log("gen4", LoggerLevel::Info);
-
-    res_path=sample_gen.generateParametricPath(curr_pos,1);
-    print_utility::print_vec_3d(res_path);
-    Logger::getAssignedLogger()->log("gen5", LoggerLevel::Info);
-
-    res_path=sample_gen.generateParametricPath(curr_pos,-0.25);
-    print_utility::print_vec_3d(res_path);
-    Logger::getAssignedLogger()->log("gen6", LoggerLevel::Info);
-
-    res_path=sample_gen.generateParametricPath(curr_pos,-0.5);
-    print_utility::print_vec_3d(res_path);
-
-    res_path=sample_gen.generateParametricPath(curr_pos,-0.75);
-    print_utility::print_vec_3d(res_path);
-
-    res_path=sample_gen.generateParametricPath(curr_pos,-1);
-    print_utility::print_vec_3d(res_path);
-    #endif
+    Vector2D<double> r1l1p1, r1l1p2, r1l2p1, r1l2p2, r2l1p1, r2l1p2, r2l2p1, r2l2p2;
+    Line2D r1l1, r1l2, r2l1, r2l2;
+    Rectangle r1, r2;
+    // ...............................
+    r1l1p1 = {7.01, 4.64};
+    r1l1p2 = {9.57, 4.64};
+    r1l2p1 = {7.01, 4.64};
+    r1l2p2 = {7.01, 7.24};
+    r1l1.setPoint1(r1l1p1);
+    r1l1.setPoint2(r1l1p2);
+    r1l2.setPoint1(r1l2p1);
+    r1l2.setPoint2(r1l2p2);
+    // ...............................
+    r2l1p1 = {4.88, 2.88};
+    r2l1p2 = {11.86, 2.88};
+    r2l2p1 = {4.88, 2.88};
+    r2l2p2 = {4.88, 9.58};
+    r2l1.setPoint1(r2l1p1);
+    r2l1.setPoint2(r2l1p2);
+    r2l2.setPoint1(r2l2p1);
+    r2l2.setPoint2(r2l2p2);
+    // ...............................
+    r1.updateRectangleSides(r1l1, r1l2);
+    r2.updateRectangleSides(r2l1, r2l2);
+    std::vector<Rectangle> t_rectangles{r1, r2};
+    Map2D* mainMap = new Map2D(t_rectangles);
     // ********************************************************************************
     // ******************************** UGV NAVIGATOR *********************************
     WheeledRobot* mainUGV = new WheeledRobot;
@@ -82,19 +56,19 @@ int main(int argc, char **argv){
     Vector2D<double> HomeBaseLoaction({0.5,-1.8});
     float HomeBaseHeading = 0;
     mainUGVNavigator->setHomeBaseLocation(HomeBaseLoaction, HomeBaseHeading);
-    Vector2D<double> EntraceLocation({5,5});
+    Vector2D<double> EntraceLocation({5.8,5.8});
     float EntranceHeading = 0;
     mainUGVNavigator->setEntranceLocation(EntraceLocation, EntranceHeading);
     mainUGVNavigator->setMap(mainMap);
     Rectangle* track = new Rectangle;
     Line2D side1,side2;
     Vector2D<double> side1_pt1,side1_pt2,side2_pt2;
-    side1_pt1.x=6.5;
-    side1_pt1.y=2.2;
-    side1_pt2.x=11.2;
-    side1_pt2.y=2.2;
-    side2_pt2.x=6.5;
-    side2_pt2.y=6.5;
+    side1_pt1.x = 5.99;
+    side1_pt1.y = 3.93;
+    side1_pt2.x = 10.48;
+    side1_pt2.y = 3.93;
+    side2_pt2.x = 5.99;
+    side2_pt2.y = 8.31;
     side1.setPoint1(side1_pt1);
     side1.setPoint2(side1_pt2);
     side2.setPoint1(side1_pt1);
