@@ -69,18 +69,19 @@ void WheeledRobot::receive_msg_data(DataMessage* t_msg,int t_channel_id) {
 }
 
 bool WheeledRobot::clearQueue() {
-    if(m_queue.size() > 1) {
-        m_queue.erase(m_queue.begin());
+    if(m_queue.size() > 0) {
+        //fix reset bug
         Vector2DMsg t_GoalPosMsg;
         t_GoalPosMsg.data = m_queue.front().project_xy();
         Vector3DMessage t_GoalHeadingMsg;
         t_GoalHeadingMsg.setVector3DMessage(Vector3D<double>({0,0, m_queue.front().z}));
         this->emit_message((DataMessage*) &t_GoalPosMsg);
         this->emit_message((DataMessage*) &t_GoalHeadingMsg);
-    }
-    else if(m_queue.size() == 1) {
         m_queue.erase(m_queue.begin());
-        return true;
     }
+    // else if(m_queue.size() == 1) {
+    //     m_queue.erase(m_queue.begin());
+    //     return true;
+    // }
     return false;
 }
