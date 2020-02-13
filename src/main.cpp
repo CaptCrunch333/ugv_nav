@@ -53,7 +53,7 @@ int main(int argc, char **argv){
     // ******************************** UGV NAVIGATOR *********************************
     WheeledRobot* mainUGV = new WheeledRobot;
     UGVNavigator* mainUGVNavigator = new UGVNavigator(mainUGV, block_frequency::hz10);
-    Vector2D<double> HomeBaseLoaction({0.5,-1.8});
+    Vector2D<double> HomeBaseLoaction({2.33,2.33});
     float HomeBaseHeading = 0;
     mainUGVNavigator->setHomeBaseLocation(HomeBaseLoaction, HomeBaseHeading);
     Vector2D<double> EntraceLocation({5.8,5.8});

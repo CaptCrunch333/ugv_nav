@@ -24,6 +24,12 @@ void UGVNavigator::loopInternal() {
         //         }
         //     }
         // }
+        //    break;
+        case UGVNavState::PATROLING: {
+            if(m_robot->reachedPosition()) {
+                mainUGVNavMissionStateManager.updateMissionState(UGVNavState::SEARCHINGFORFIRE);
+            }
+        }
             break;
         case UGVNavState::HEADINGTOWARDSFIRE: {
             if(m_robot->reachedPosition()) {
@@ -134,6 +140,9 @@ void UGVNavigator::receive_msg_data(DataMessage* t_msg, int t_channel_id) {
                 m_robot->setGoal(m_PathGenerator.generateParametricPath(m_robot->getCurrentPosition(), -1));
                 m_robot->move();
             }
+            if(mainUGVNavMissionStateManager.getMissionState() == UGVNavState::SEARCHINGFORFIRE) {
+                mainUGVNavMissionStateManager.updateMissionState(UGVNavState::PATROLING);
+            }
         }
     }
     else if(t_channel_id == (int)CHANNELS::POSITION_ADJUSTMENT) { //TODO: check functionality
@@ -143,6 +152,9 @@ void UGVNavigator::receive_msg_data(DataMessage* t_msg, int t_channel_id) {
             double t_step_size = double(t_float_msg->data);
             m_robot->setGoal(m_PathGenerator.generateParametricPath(m_robot->getCurrentPosition(), t_step_size));
             m_robot->move();
+            if(mainUGVNavMissionStateManager.getMissionState() == UGVNavState::SEARCHINGFORFIRE) {
+                mainUGVNavMissionStateManager.updateMissionState(UGVNavState::PATROLING);
+            }
         }
     }
 }
