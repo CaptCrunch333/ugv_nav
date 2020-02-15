@@ -54,12 +54,6 @@ int main(int argc, char **argv){
     // ******************************** UGV NAVIGATOR *********************************
     WheeledRobot* mainUGV = new WheeledRobot;
     UGVNavigator* mainUGVNavigator = new UGVNavigator(mainUGV, block_frequency::hz10);
-    Vector2D<double> HomeBaseLoaction({2.33,2.33});
-    float HomeBaseHeading = 0;
-    mainUGVNavigator->setHomeBaseLocation(HomeBaseLoaction, HomeBaseHeading);
-    Vector2D<double> EntraceLocation({5.8,5.8});
-    float EntranceHeading = 0;
-    mainUGVNavigator->setEntranceLocation(EntraceLocation, EntranceHeading);
     mainUGVNavigator->setMap(mainMap);
     Rectangle* track = new Rectangle;
     Line2D side1,side2;
@@ -80,11 +74,11 @@ int main(int argc, char **argv){
     // ********************************** ROS UNITS  **********************************
     //ROSFactory Units
     ROSUnit_Factory* mainROSFactory = new ROSUnit_Factory(nh);
-    ROSUnit* FireDirectionUpdaterSrv = mainROSFactory->CreateROSUnit(ROSUnit_tx_rx_type::Server, ROSUnit_Vector, "ugv_nav/set_fire_direction");
     ROSUnit* FirePositionUpdaterSrv = mainROSFactory->CreateROSUnit(ROSUnit_tx_rx_type::Server, ROSUnit_Point, "ugv_nav/set_fire_location");
     ROSUnit* InternalStateUpdaterSrv = mainROSFactory->CreateROSUnit(ROSUnit_tx_rx_type::Server, ROSUnit_Int, "ugv_nav/set_mission_state");
-    ROSUnit* UGVPatrolUpdaterSrv = mainROSFactory->CreateROSUnit(ROSUnit_tx_rx_type::Server, ROSUnit_Int, "ugv_nav/set_patrol_mode");
     ROSUnit* UGVPositionAdjustmentSrv = mainROSFactory->CreateROSUnit(ROSUnit_tx_rx_type::Server, ROSUnit_Float, "ugv_nav/set_position_adjustment"); // TODO: add to IF
+    ROSUnit* UGVChangePoseSrv = mainROSFactory->CreateROSUnit(ROSUnit_tx_rx_type::Server, ROSUnit_Pose, "ugv_nav/move_to_goal");
+    ROSUnit* UGVGoToFireLocationSrv = mainROSFactory->CreateROSUnit(ROSUnit_tx_rx_type::Server, ROSUnit_Empty, "ugv_nav/go_to_fire_location");
     ROSUnit* IntertialPositionPub = mainROSFactory->CreateROSUnit(ROSUnit_tx_rx_type::Publisher, ROSUnit_Point2D, "ugv_nav/inertial_position");
     ROSUnit* IntertialHeadingPub = mainROSFactory->CreateROSUnit(ROSUnit_tx_rx_type::Publisher, ROSUnit_Float, "ugv_nav/inertial_heading");
     ROSUnit* DistanceToFirePub = mainROSFactory->CreateROSUnit(ROSUnit_tx_rx_type::Publisher, ROSUnit_Float, "ugv_nav/distance_to_fire");
@@ -106,14 +100,8 @@ int main(int argc, char **argv){
     ROS_AMCLPose->add_callback_msg_receiver((msg_receiver*) mainUGV);
     QTE->add_callback_msg_receiver((msg_receiver*) mainUGV);
 
-    FireDirectionUpdaterSrv->add_callback_msg_receiver((msg_receiver*) mainUGVNavigator);
-    FireDirectionUpdaterSrv->setEmittingChannel((int)CHANNELS::FIRE_DIRECTION_UPDATER);
-
     FirePositionUpdaterSrv->add_callback_msg_receiver((msg_receiver*) mainUGVNavigator);
     FirePositionUpdaterSrv->setEmittingChannel((int)CHANNELS::FIRE_POSITION_UPDATER);
-
-    UGVPatrolUpdaterSrv->add_callback_msg_receiver((msg_receiver*) mainUGVNavigator);
-    UGVPatrolUpdaterSrv->setEmittingChannel((int)CHANNELS::PATROL_UPDATER);
 
     InternalStateUpdaterSrv->add_callback_msg_receiver((msg_receiver*) mainUGVNavigator);
     InternalStateUpdaterSrv->setEmittingChannel((int)CHANNELS::INTERNAL_STATE_UPDATER);
@@ -121,15 +109,20 @@ int main(int argc, char **argv){
     UGVPositionAdjustmentSrv->add_callback_msg_receiver((msg_receiver*) mainUGVNavigator);
     UGVPositionAdjustmentSrv->setEmittingChannel((int)CHANNELS::POSITION_ADJUSTMENT);
 
+    UGVChangePoseSrv->add_callback_msg_receiver((msg_receiver*) mainUGVNavigator);
+    UGVChangePoseSrv->setEmittingChannel((int)CHANNELS::CHANGE_POSE);
+
+    UGVGoToFireLocationSrv->add_callback_msg_receiver((msg_receiver*) mainUGVNavigator);
+    UGVGoToFireLocationSrv->setEmittingChannel((int)CHANNELS::GO_TO_FIRE);
+
     mainUGVNavigator->add_callback_msg_receiver((msg_receiver*) DistanceToFirePub);
 
     mainUGV->add_callback_msg_receiver((msg_receiver*) BaseMoveClnt);
     mainUGV->add_callback_msg_receiver((msg_receiver*) ETQ);
     ETQ->add_callback_msg_receiver((msg_receiver*) BaseMoveClnt);
-    //mainUGV->add_callback_msg_receiver((msg_receiver*) BaseStopClnt);
+    mainUGV->add_callback_msg_receiver((msg_receiver*) BaseStopClnt);
     BaseStatusUpdaterClnt->add_callback_msg_receiver((msg_receiver*) mainUGV);
     BaseStatusUpdaterClnt->setEmittingChannel((int)CHANNELS::GOAL_STATUS);
-
     (&mainUGVNavMissionStateManager)->add_callback_msg_receiver((msg_receiver*) StateUpdaterClnt);
     // ********************************************************************************
     // ****************************** SYSTEM CONNECTIONS ******************************
