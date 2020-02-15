@@ -40,32 +40,12 @@ void UGVNavMissionStateManager::displayStateChange()
         Logger::getAssignedLogger()->log("UGV Nav State Changed To Utility", LoggerLevel::Info);
         break;
 
-    case UGVNavState::HEADINGTOWARDSENTRANCE:
-        Logger::getAssignedLogger()->log("UGV Nav State To Heading Towards Entrance", LoggerLevel::Info);
+    case UGVNavState::MOVING:
+        Logger::getAssignedLogger()->log("UGV Nav State To Moving", LoggerLevel::Info);
         break;
     
-    case UGVNavState::SEARCHINGFORFIRE:
-        Logger::getAssignedLogger()->log("UGV Nav State To Searching For Fire", LoggerLevel::Info);
-        break;
-
-    case UGVNavState::HEADINGTOWARDSFIRE:
-        Logger::getAssignedLogger()->log("UGV Nav State To Heading Towards Fire", LoggerLevel::Info);
-        break;
-
-    case UGVNavState::UGVALIGNINGWITHTARGET:
-        Logger::getAssignedLogger()->log("UGV Nav State To UGV Aligning With Target", LoggerLevel::Info);
-        break;
-
-    case UGVNavState::UGVALIGNEDWITHTARGET:
-        Logger::getAssignedLogger()->log("UGV Nav State To UGV Aligned With Target", LoggerLevel::Info);
-        break;
-
-    case UGVNavState::EXTINGUISHINGFIRE:
-        Logger::getAssignedLogger()->log("UGV Nav State To Extinguishing Fire", LoggerLevel::Info);
-        break;
-
-    case UGVNavState::RETURNINGTOBASE:
-        Logger::getAssignedLogger()->log("UGV Nav State To Returning To Base", LoggerLevel::Info);
+    case UGVNavState::REACHEDGOAL:
+        Logger::getAssignedLogger()->log("UGV Nav State To Reached Goal ", LoggerLevel::Info);
         break;
 
     default:
